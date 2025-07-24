@@ -1,27 +1,27 @@
-from typing import Union
+from fastapi import FastAPI                    # Import de FastAPI pour créer l'application
+from fastapi.middleware.cors import CORSMiddleware  # Middleware pour gérer le CORS (Cross-Origin Resource Sharing)
+from routers import users                      # Import du routeur users défini dans routers/users.py
 
-from fastapi import FastAPI
-from pydantic import BaseModel
+app = FastAPI()                               # Création d'une instance de l'application FastAPI
 
-app = FastAPI()
+#pour reactTS
+origins = [
+    "http://localhost:3000",
+]
 
+# Ajout du middleware CORS à l'application FastAPI
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,       # Origines autorisées à faire des requêtes cross-origin
+    allow_credentials=True,      # Autorise l'envoi des cookies et autres credentials dans la requête
+    allow_methods=["*"],         # Autorise toutes les méthodes HTTP (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],         # Autorise tous les headers HTTP dans les requêtes
+)
 
-class Item(BaseModel):
-    name: str
-    price: float
-    is_offer: Union[bool, None] = None
-
-
+# Route racine pour tester que l'API fonctionne
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"message": "API is running!"}
 
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-
-@app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {"item_name": item.name, "item_id": item_id}
+# Inclusion du routeur users dans l'application principale FastAPI
+app.include_router(users.router)
