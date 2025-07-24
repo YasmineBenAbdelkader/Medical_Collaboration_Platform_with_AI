@@ -1,6 +1,6 @@
 from fastapi import FastAPI                    # Import de FastAPI pour créer l'application
 from fastapi.middleware.cors import CORSMiddleware  # Middleware pour gérer le CORS (Cross-Origin Resource Sharing)
-from routers import users                      # Import du routeur users défini dans routers/users.py
+from app.routers import users                      # Import du routeur users défini dans routers/users.py
 
 app = FastAPI()                               # Création d'une instance de l'application FastAPI
 
