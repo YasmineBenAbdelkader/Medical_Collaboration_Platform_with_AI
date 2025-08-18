@@ -9,58 +9,51 @@ import { ExpertDirectory } from './pages/ExpertDirectory';
 import { AIAssistant } from './pages/AIAssistant';
 import { Login } from './pages/Login';
 import { LandingPage } from './pages/LandingPage';
+import { NewCase } from './pages/NewCase';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-// Protected route component that redirects to landing page if not authenticated
-const ProtectedRoute = ({
-  children
-}: {
-  children: React.ReactNode;
-}) => {
-  const {
-    isAuthenticated
-  } = useAuth();
-  if (!isAuthenticated) {
-    return <Navigate to="/landing" />;
-  }
-  return <>{children}</>;
-};
+
 export function App() {
-  return <AuthProvider>
+  return (
+    <AuthProvider>
       <Router>
         <Routes>
           <Route path="/Home" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/*" element={<AppLayout>
+          <Route
+            path="/*"
+            element={
+              <AppLayout>
                 <Routes>
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/case/new" element={<NewCase />} />
                   <Route path="/case/:id" element={<CaseView />} />
                   <Route path="/profile/:id" element={<Profile />} />
                   <Route path="/experts" element={<ExpertDirectory />} />
                   <Route path="/ai-assistant" element={<AIAssistant />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
-              </AppLayout>} />
+              </AppLayout>
+            }
+          />
         </Routes>
       </Router>
-    </AuthProvider>;
+    </AuthProvider>
+  );
 }
+
 // Layout component for the main application
-const AppLayout = ({
-  children
-}: {
-  children: React.ReactNode;
-}) => {
-  const {
-    isAuthenticated
-  } = useAuth();
+const AppLayout = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuth();
   if (!isAuthenticated) {
     return <Navigate to="/landing" />;
   }
-  return <div className="flex h-screen bg-gray-50">
+  return (
+    <div className="flex h-screen bg-gray-50">
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
       </div>
-    </div>;
+    </div>
+  );
 };

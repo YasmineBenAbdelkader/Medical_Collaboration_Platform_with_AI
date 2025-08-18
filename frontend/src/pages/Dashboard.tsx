@@ -1,66 +1,34 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { CaseCard } from '../components/ui/CaseCard';
 import { FilterIcon, PlusCircleIcon, TrendingUpIcon, ClockIcon, UsersIcon, MessageCircleIcon, StarIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getCases, seedCasesIfEmpty } from '../services/storage';
+import type { StoredCase } from '../services/storage';
 
 export const Dashboard = () => {
-  // Sample data - in a real app this would come from an API
-  const cases = [{
-    id: '1',
-    title: 'Patient avec arythmie cardiaque inexpliquée',
-    excerpt: "Homme de 54 ans présentant des épisodes d'arythmie cardiaque depuis 3 semaines. ECG et analyses sanguines normaux. Antécédents familiaux de problèmes cardiaques...",
-    author: {
-      id: '2',
-      name: 'Dr. Thomas Dubois',
-      avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-      specialty: 'Cardiologie'
-    },
-    date: "Aujourd'hui",
-    commentCount: 12,
-    likeCount: 24,
-    hasImage: true,
-    imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80',
-    tags: ['Cardiologie', 'Arythmie', 'ECG'],
-    isUrgent: false
-  }, {
-    id: '2',
-    title: "Cas complexe de dermatite - besoin d'avis",
-    excerpt: 'Patiente de 32 ans avec éruption cutanée progressive depuis 2 mois. Résistante aux traitements standard. Biopsie suggère...',
-    author: {
-      id: '3',
-      name: 'Dr. Marie Laurent',
-      avatar: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-      specialty: 'Dermatologie'
-    },
-    date: 'Hier',
-    commentCount: 8,
-    likeCount: 15,
-    hasImage: true,
-    imageUrl: 'https://images.unsplash.com/photo-1579165466991-467135ad3110?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80',
-    tags: ['Dermatologie', 'Allergie', 'Biopsie'],
-    isUrgent: true
-  }, {
-    id: '3',
-    title: 'Douleur abdominale atypique chez un adolescent',
-    excerpt: "Adolescent de 16 ans avec douleur abdominale intermittente depuis 6 semaines. Examens d'imagerie normaux mais symptômes persistants...",
-    author: {
-      id: '4',
-      name: 'Dr. Antoine Moreau',
-      avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-      specialty: 'Pédiatrie'
-    },
-    date: 'Il y a 2 jours',
-    commentCount: 5,
-    likeCount: 9,
-    hasImage: false,
-    tags: ['Pédiatrie', 'Gastroentérologie', 'Douleur chronique'],
-    isUrgent: false
-  }];
+  const [cases, setCases] = useState<StoredCase[]>([]);
+
+  useEffect(() => {
+    seedCasesIfEmpty();
+    setCases(getCases());
+  }, []);
+
+  const formatRelative = (timestamp: number) => {
+    const diffMs = Date.now() - timestamp;
+    const minutes = Math.floor(diffMs / 60000);
+    if (minutes < 1) return "À l'instant";
+    if (minutes < 60) return `Il y a ${minutes} min`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `Il y a ${hours} h`;
+    const days = Math.floor(hours / 24);
+    if (days === 1) return 'Hier';
+    return `Il y a ${days} jours`;
+  };
 
   // Données pour la sidebar
   const stats = {
-    totalCases: 156,
-    urgentCases: 8,
+    totalCases: cases.length,
+    urgentCases: cases.filter(c => c.isUrgent).length,
     resolvedCases: 142,
     activeExperts: 23
   };
@@ -121,7 +89,28 @@ export const Dashboard = () => {
         </div>
         
         <div className="space-y-4">
-          {cases.map(caseItem => <CaseCard key={caseItem.id} {...caseItem} />)}
+          {cases.map(c => (
+            <CaseCard
+              key={c.id}
+              id={c.id}
+              title={c.title}
+              excerpt={c.excerpt}
+              author={c.author}
+              date={formatRelative(c.createdAt)}
+              commentCount={c.commentCount}
+              likeCount={c.likeCount}
+              hasImage={c.hasImage}
+              imageUrl={c.imageUrl}
+              tags={c.tags}
+              isUrgent={c.isUrgent}
+            />
+          ))}
+          {cases.length === 0 && (
+            <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
+              <p className="text-gray-600 mb-2">Aucun cas à afficher pour le moment.</p>
+              <Link to="/case/new" className="text-blue-600 hover:text-blue-700 font-medium">Publier un premier cas →</Link>
+            </div>
+          )}
         </div>
       </div>
 

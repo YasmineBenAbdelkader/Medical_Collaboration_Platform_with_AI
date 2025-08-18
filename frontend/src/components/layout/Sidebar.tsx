@@ -13,7 +13,7 @@ export const Sidebar = () => {
 
   const navItems = [
     {
-      path: '/',
+      path: '/dashboard',
       label: 'Tableau de bord',
       icon: <HomeIcon size={20} />,
       description: 'Vue d\'ensemble'
