@@ -9,6 +9,8 @@ import { ExpertDirectory } from './pages/ExpertDirectory';
 import { AIAssistant } from './pages/AIAssistant';
 import Login  from './pages/Login';
 import { LandingPage } from './pages/LandingPage';
+import { ContactUs } from './pages/ContactUs.tsx';
+import { Blog } from './pages/Blog';
 import { NewCase } from './pages/NewCase';
 import  Register  from './pages/register';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -18,7 +20,9 @@ export function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/Home" element={<LandingPage />} />
+          <Route path="/home" element={<LandingPage />} />
+          <Route path="/contactUs" element={<ContactUs />} />
+          <Route path="/blog" element={<Blog />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route
@@ -47,7 +51,7 @@ export function App() {
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
   if (!isAuthenticated) {
-    return <Navigate to="/landing" />;
+    return <Navigate to="/home" />;
   }
   return (
     <div className="flex h-screen bg-gray-50">
