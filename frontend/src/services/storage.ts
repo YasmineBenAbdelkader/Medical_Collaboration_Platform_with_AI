@@ -55,6 +55,16 @@ export function addCase(newCase: Omit<StoredCase, 'id' | 'createdAt' | 'commentC
 	return created;
 }
 
+export function deleteCaseById(id: string, requesterId?: string): boolean {
+	const cases = readCases();
+	const idx = cases.findIndex(c => c.id === id);
+	if (idx === -1) return false;
+	if (requesterId && cases[idx].author.id !== requesterId) return false;
+	cases.splice(idx, 1);
+	writeCases(cases);
+	return true;
+}
+
 export function clearCases(): void {
 	writeCases([]);
 }
