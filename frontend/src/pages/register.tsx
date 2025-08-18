@@ -1,272 +1,323 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { BrainCircuitIcon, MailIcon, LockIcon, UserIcon, UserCogIcon, CheckCircleIcon, EyeIcon, EyeOffIcon, ArrowRightIcon } from 'lucide-react';
-import medcollabImg from '../assets/medcollab3.jpg';
-
-export const Register: React.FC = () => {
-  const navigate = useNavigate();
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<'doctor' | 'student' | 'expert'>('doctor');
-  const [specialty, setSpecialty] = useState('Cardiologie');
-  const [agree, setAgree] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [focusedField, setFocusedField] = useState<string | null>(null);
-  const [rpps, setRpps] = useState('');
-  const [bio, setBio] = useState('');
-  const [studentId, setStudentId] = useState('');
-  const [university, setUniversity] = useState('');
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const specialties = [
-    'Cardiologie','Dermatologie','Endocrinologie','Gastroentérologie','Neurologie','Oncologie','Pédiatrie','Pneumologie','Psychiatrie','Radiologie','Rhumatologie'
-  ];
-
-  const handleSubmit = async (e: React.FormEvent) => {
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { StethoscopeIcon, UserPlusIcon, GraduationCapIcon, AwardIcon, ArrowLeftIcon, ChevronRightIcon, HospitalIcon, MailIcon, LockIcon } from 'lucide-react';
+import { BackgroundAnimation } from '../components/ui/BackgroundAnimation';
+import { Logo } from '../components/ui/Logo';
+import { FormInput } from '../components/ui/FormInput';
+import { FormSelect } from '../components/ui/FormSelect';
+import { FileUpload } from '../components/ui/FileUpload';
+import { Stepper } from '../components/ui/Stepper';
+type UserType = 'generaliste' | 'specialiste' | 'etudiant' | 'expert' | null;
+const Register = () => {
+  const [userType, setUserType] = useState<UserType>(null);
+  const [currentStep, setCurrentStep] = useState(0);
+  // Form states
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    rppsNumber: '',
+    studentId: '',
+    speciality: '',
+    facility: '',
+    experience: '',
+    university: '',
+    hospital: '',
+    biography: ''
+  });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const {
+      id,
+      value
+    } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const {
+      id,
+      value
+    } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+  const handleNext = () => {
+    setCurrentStep(prev => prev + 1);
+  };
+  const handleBack = () => {
+    if (currentStep === 0) {
+      setUserType(null);
+    } else {
+      setCurrentStep(prev => prev - 1);
+    }
+  };
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    if (!fullName.trim()) return setError('Le nom complet est requis.');
-    if (password.length < 8) return setError('Le mot de passe doit contenir au moins 8 caractères.');
-    if (password !== confirmPassword) return setError('Les mots de passe ne correspondent pas.');
-    if (!agree) return setError('Vous devez accepter les conditions.');
-
-    setSubmitting(true);
-    await new Promise(r => setTimeout(r, 1000));
-    setSubmitting(false);
-    setSuccess("Votre demande d'inscription a été envoyée. Un administrateur validera votre compte.");
-    setTimeout(() => navigate('/login'), 1200);
+    // Handle registration logic
+    console.log({
+      userType,
+      formData
+    });
   };
-
-  const getPasswordStrength = (pass: string) => {
-    if (pass.length < 4) return { strength: 0, color: 'bg-gray-200', text: '' };
-    if (pass.length < 6) return { strength: 25, color: 'bg-red-400', text: 'Faible' };
-    if (pass.length < 8) return { strength: 50, color: 'bg-yellow-400', text: 'Moyen' };
-    if (pass.length >= 8 && /[A-Z]/.test(pass) && /[0-9]/.test(pass)) 
-      return { strength: 100, color: 'bg-green-400', text: 'Fort' };
-    return { strength: 75, color: 'bg-blue-400', text: 'Bon' };
+  // Define steps based on user type
+  const getSteps = () => {
+    switch (userType) {
+      case 'generaliste':
+      case 'specialiste':
+        return ['Informations', 'Profession', 'Documents'];
+      case 'etudiant':
+        return ['Informations', 'Académique', 'Documents'];
+      case 'expert':
+        return ['Informations', 'Profession', 'Expertise', 'Documents'];
+      default:
+        return [];
+    }
   };
-
-  const passwordStrength = getPasswordStrength(password);
-
-  return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50">
-      {/* Partie gauche : Image et message d'accueil */}
-      <div
-        className="w-full md:w-2/5 flex flex-col justify-center items-center p-8 relative min-h-[400px]"
-        style={{
-          backgroundImage: `linear-gradient(135deg, rgba(59,130,246,0.55), rgba(99,102,241,0.55)), url(${medcollabImg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
-      </div>
-      {/* Partie droite : Formulaire d'inscription */}
-      <div className="w-full md:w-3/5 flex flex-col justify-center items-center p-8">
-        <div className="w-full max-w-md text-sm">
-          <h1 className="text-lg font-bold text-blue-700 mb-2">Créer un compte</h1>
-          <p className="text-xs text-blue-700/70 mb-6">Remplissez le formulaire pour rejoindre la plateforme.</p>
-          {error && (
-            <div className="mb-4 p-3 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm shadow-sm">{error}</div>
-          )}
-          {success && (
-            <div className="mb-4 p-3 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm shadow-sm">{success}</div>
-          )}
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            {/* Nom complet */}
-            <div>
-              <label className="block text-xs font-semibold text-blue-700 mb-1">Nom complet *</label>
-              <input
-                type="text"
-                className="block w-full px-3 py-2 border-2 rounded-xl bg-white/80 placeholder-blue-400 text-blue-900 text-sm focus:outline-none focus:bg-white border-blue-100 focus:border-blue-400 transition"
-                placeholder="Dr. Jean Dupont"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
-            </div>
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-semibold text-blue-700 mb-1">Adresse e-mail *</label>
-              <input
-                type="email"
-                autoComplete="email"
-                className="block w-full px-3 py-2 border-2 rounded-xl bg-white/80 placeholder-blue-400 text-blue-900 focus:outline-none focus:bg-white border-blue-100 focus:border-blue-400 transition"
-                placeholder="votre.email@hopital.fr"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            {/* Mot de passe */}
-            <div>
-              <label className="block text-sm font-semibold text-blue-700 mb-1">Mot de passe *</label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="new-password"
-                className="block w-full px-3 py-2 border-2 rounded-xl bg-white/80 placeholder-blue-400 text-blue-900 focus:outline-none focus:bg-white border-blue-100 focus:border-blue-400 transition"
-                placeholder="••••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <button type="button" className="mt-1 text-xs text-blue-500 hover:underline" onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? 'Masquer' : 'Afficher'} le mot de passe
-              </button>
-              {password && (
-                <div className="mt-1 text-xs text-blue-700/70">Force : <span className={`font-bold ${passwordStrength.strength >= 75 ? 'text-green-600' : passwordStrength.strength >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>{passwordStrength.text}</span></div>
-              )}
-            </div>
-            {/* Confirmer mot de passe */}
-            <div>
-              <label className="block text-sm font-semibold text-blue-700 mb-1">Confirmer le mot de passe *</label>
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                autoComplete="new-password"
-                className={`block w-full px-3 py-2 border-2 rounded-xl bg-white/80 placeholder-blue-400 text-blue-900 focus:outline-none focus:bg-white border-blue-100 focus:border-blue-400 transition ${confirmPassword && password !== confirmPassword ? 'border-red-300 bg-red-50/30' : ''}`}
-                placeholder="••••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-              <button type="button" className="mt-1 text-xs text-blue-500 hover:underline" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                {showConfirmPassword ? 'Masquer' : 'Afficher'} le mot de passe
-              </button>
-              {confirmPassword && password !== confirmPassword && (
-                <div className="mt-1 text-xs text-red-600">Les mots de passe ne correspondent pas</div>
-              )}
-            </div>
-            {/* Rôle et spécialité */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-blue-700 mb-1">Rôle *</label>
-                <select
-                  className="block w-full px-3 py-2 border-2 rounded-xl bg-white/80 text-blue-900 focus:outline-none focus:bg-white border-blue-100 focus:border-blue-400 transition"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value as any)}
-                >
-                  <option value="doctor">👨‍⚕️ Médecin</option>
-                  <option value="student">🎓 Étudiant en médecine</option>
-                  <option value="expert">🔬 Expert / Chercheur</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-blue-700 mb-1">Spécialité *</label>
-                <select
-                  className="block w-full px-3 py-2 border-2 rounded-xl bg-white/80 text-blue-900 focus:outline-none focus:bg-white border-blue-100 focus:border-blue-400 transition"
-                  value={specialty}
-                  onChange={(e) => setSpecialty(e.target.value)}
-                >
-                  {specialties.map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            {/* Champs spécifiques selon le rôle */}
-            {role === 'doctor' && (
-              <div>
-                <label className="block text-sm font-medium text-blue-700 mb-1">RPPS *</label>
-                <input
-                  type="text"
-                  className="block w-full px-3 py-2 border-2 rounded-xl bg-white/80 placeholder-blue-400 text-blue-900 focus:outline-none focus:bg-white border-blue-100 focus:border-blue-400 transition"
-                  placeholder="Numéro RPPS"
-                  value={rpps}
-                  onChange={e => setRpps(e.target.value)}
-                />
-              </div>
-            )}
-            {role === 'expert' && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">RPPS *</label>
-                  <input
-                    type="text"
-                    className="block w-full px-3 py-2 border-2 rounded-xl bg-white/80 placeholder-blue-400 text-blue-900 focus:outline-none focus:bg-white border-blue-100 focus:border-blue-400 transition"
-                    placeholder="Numéro RPPS"
-                    value={rpps}
-                    onChange={e => setRpps(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">Biographie *</label>
-                  <textarea
-                    className="block w-full px-3 py-2 border-2 rounded-xl bg-white/80 placeholder-blue-400 text-blue-900 focus:outline-none focus:bg-white border-blue-100 focus:border-blue-400 transition"
-                    placeholder="Décrivez votre expertise, vos travaux, etc."
-                    value={bio}
-                    onChange={e => setBio(e.target.value)}
-                    rows={4}
-                  />
-                </div>
-                <div className="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-xl p-2 mt-2">
-                  Votre compte expert devra être validé par un administrateur avant activation.
-                </div>
-              </>
-            )}
-            {role === 'student' && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">Identifiant étudiant *</label>
-                  <input
-                    type="text"
-                    className="block w-full px-3 py-2 border-2 rounded-xl bg-white/80 placeholder-blue-400 text-blue-900 focus:outline-none focus:bg-white border-blue-100 focus:border-blue-400 transition"
-                    placeholder="Numéro étudiant"
-                    value={studentId}
-                    onChange={e => setStudentId(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">Université *</label>
-                  <input
-                    type="text"
-                    className="block w-full px-3 py-2 border-2 rounded-xl bg-white/80 placeholder-blue-400 text-blue-900 focus:outline-none focus:bg-white border-blue-100 focus:border-blue-400 transition"
-                    placeholder="Université d'inscription"
-                    value={university}
-                    onChange={e => setUniversity(e.target.value)}
-                  />
-                </div>
-              </>
-            )}
-            {/* Conditions */}
-            <div className="flex items-start">
-              <input
-                id="agree"
-                type="checkbox"
-                className="w-5 h-5 rounded-md border-2 border-blue-200 bg-white focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-0 mr-2"
-                checked={agree}
-                onChange={(e) => setAgree(e.target.checked)}
-              />
-              <label htmlFor="agree" className="text-sm text-blue-700 cursor-pointer">
-                J'accepte les <a href="#" className="text-blue-600 hover:text-blue-800 font-medium underline">conditions d'utilisation</a> et la <a href="#" className="text-blue-600 hover:text-blue-800 font-medium underline">politique de confidentialité</a>.
-              </label>
-            </div>
-            {/* Bouton submit */}
-            <button
-              type="submit"
-              disabled={submitting || !agree}
-              className={`w-full py-2 px-4 text-sm font-semibold rounded-xl text-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300/50 focus:ring-offset-0 ${
-                submitting || !agree
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:shadow-blue-200/50 transform hover:scale-[1.02] active:scale-[0.98]'
-              }`}
-            >
-              {submitting ? 'Création en cours...' : 'Créer mon compte'}
-            </button>
-            <div className="text-center">
-              <p className="text-sm text-blue-700/70">
-                Vous avez déjà un compte ?{' '}
-                <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-800 hover:underline">Se connecter ici</Link>
-              </p>
-            </div>
-          </form>
+  // User type selection screen
+  const renderUserTypeSelection = () => <div className="w-full max-w-4xl mx-auto">
+      <h2 className="text-xl font-bold text-gray-800 mb-6 text-center">
+        Type de compte
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Médecin Généraliste */}
+        <div onClick={() => setUserType('generaliste')} className="border-2 border-gray-200 hover:border-[#00A7A7] bg-white/80 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105">
+          <div className="bg-[#00A7A7]/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4">
+            <StethoscopeIcon className="h-7 w-7 text-[#00A7A7]" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-800 mb-2">
+            Généraliste
+          </h3>
+          <p className="text-gray-600 text-sm">Accès standard</p>
+        </div>
+        {/* Médecin Spécialiste */}
+        <div onClick={() => setUserType('specialiste')} className="border-2 border-gray-200 hover:border-[#00A7A7] bg-white/80 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105">
+          <div className="bg-[#00A7A7]/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4">
+            <UserPlusIcon className="h-7 w-7 text-[#00A7A7]" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-800 mb-2">
+            Spécialiste
+          </h3>
+          <p className="text-gray-600 text-sm">Consultations spécialisées</p>
+        </div>
+        {/* Étudiant en Médecine */}
+        <div onClick={() => setUserType('etudiant')} className="border-2 border-blue-200 bg-blue-50/30 hover:border-blue-400 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105">
+          <div className="bg-blue-500/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4">
+            <GraduationCapIcon className="h-7 w-7 text-blue-500" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-800 mb-2">Étudiant</h3>
+          <p className="text-gray-600 text-sm">Formation et stages</p>
+        </div>
+        {/* Expert Médical Certifié */}
+        <div onClick={() => setUserType('expert')} className="border-2 border-[#00A7A7] bg-teal-50/30 ring-2 ring-[#00A7A7]/20 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105">
+          <div className="bg-[#00A7A7]/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4">
+            <AwardIcon className="h-7 w-7 text-[#00A7A7]" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-800 mb-2">Expert</h3>
+          <p className="text-gray-600 text-sm">Autorité médicale</p>
         </div>
       </div>
-    </div>
-  );
+    </div>;
+  // Step 1: Personal information (common for all user types)
+  const renderPersonalInfoStep = () => <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormInput id="firstName" label="Prénom" required value={formData.firstName} onChange={handleInputChange} />
+        <FormInput id="lastName" label="Nom" required value={formData.lastName} onChange={handleInputChange} />
+      </div>
+      <FormInput id="email" label="Email professionnel" type="email" placeholder="dr.nom@hopital.fr" icon={<MailIcon size={18} />} required value={formData.email} onChange={handleInputChange} />
+      <FormInput id="password" label="Mot de passe" type="password" icon={<LockIcon size={18} />} required value={formData.password} onChange={handleInputChange} />
+      <FormInput id="confirmPassword" label="Confirmer le mot de passe" type="password" icon={<LockIcon size={18} />} required value={formData.confirmPassword} onChange={handleInputChange} />
+      {/* Password strength indicator */}
+      {formData.password && <div className="mt-1">
+          <div className="flex gap-1 mb-1">
+            <div className={`h-1 flex-1 rounded-full ${formData.password.length > 0 ? 'bg-red-500' : 'bg-gray-700'}`}></div>
+            <div className={`h-1 flex-1 rounded-full ${formData.password.length >= 6 ? 'bg-yellow-500' : 'bg-gray-700'}`}></div>
+            <div className={`h-1 flex-1 rounded-full ${formData.password.length >= 10 ? 'bg-green-500' : 'bg-gray-700'}`}></div>
+          </div>
+          <p className="text-xs text-gray-400">
+            {formData.password.length < 6 && 'Mot de passe faible'}
+            {formData.password.length >= 6 && formData.password.length < 10 && 'Mot de passe moyen'}
+            {formData.password.length >= 10 && 'Mot de passe fort'}
+          </p>
+        </div>}
+    </div>;
+  // Step 2: Professional information for doctors
+  const renderProfessionalInfoStep = () => <div className="space-y-4">
+      <FormInput id={userType === 'etudiant' ? 'studentId' : 'rppsNumber'} label={userType === 'etudiant' ? "Numéro d'inscription étudiant" : 'Numéro RPPS'} placeholder={userType === 'etudiant' ? '' : '12345678901'} required value={userType === 'etudiant' ? formData.studentId : formData.rppsNumber} onChange={handleInputChange} />
+      {userType === 'generaliste' && <FormInput id="speciality" label="Mention spéciale" value="Médecine générale" onChange={handleInputChange} readOnly />}
+      {userType === 'specialiste' || userType === 'expert' ? <FormSelect id="speciality" label="Spécialité médicale" required value={formData.speciality} onChange={handleSelectChange} options={[{
+      value: 'cardiologie',
+      label: 'Cardiologie'
+    }, {
+      value: 'dermatologie',
+      label: 'Dermatologie'
+    }, {
+      value: 'neurologie',
+      label: 'Neurologie'
+    }, {
+      value: 'pediatrie',
+      label: 'Pédiatrie'
+    }, {
+      value: 'psychiatrie',
+      label: 'Psychiatrie'
+    }, {
+      value: 'radiologie',
+      label: 'Radiologie'
+    }, {
+      value: 'chirurgie',
+      label: 'Chirurgie générale'
+    }, {
+      value: 'gynecologie',
+      label: 'Gynécologie-obstétrique'
+    }, {
+      value: 'anesthesie',
+      label: 'Anesthésie-réanimation'
+    }, {
+      value: 'autre',
+      label: 'Autre'
+    }]} /> : null}
+      {userType === 'etudiant' ? <>
+          <FormInput id="university" label="Faculté de médecine" required value={formData.university} onChange={handleInputChange} />
+          <FormInput id="hospital" label="Hôpital de stage/internat" value={formData.hospital} onChange={handleInputChange} />
+        </> : <>
+          <FormInput id="facility" label="Établissement de rattachement" icon={<HospitalIcon size={18} />} value={formData.facility} onChange={handleInputChange} />
+          <FormSelect id="experience" label="Années d'expérience" value={formData.experience} onChange={handleSelectChange} options={[{
+        value: '0-2',
+        label: '0-2 ans'
+      }, {
+        value: '3-5',
+        label: '3-5 ans'
+      }, {
+        value: '6-10',
+        label: '6-10 ans'
+      }, {
+        value: '11-20',
+        label: '11-20 ans'
+      }, {
+        value: '20+',
+        label: 'Plus de 20 ans'
+      }]} />
+        </>}
+    </div>;
+  // Step 3 for expert: Expertise profile
+  const renderExpertiseProfileStep = () => <div className="space-y-4">
+      <div className="mb-4">
+        <label htmlFor="biography" className="block text-sm font-medium text-gray-200 mb-1">
+          Biographie professionnelle
+        </label>
+        <textarea id="biography" rows={4} className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-[#00A7A7] focus:border-transparent outline-none text-white placeholder-gray-400 transition-all duration-300" placeholder="Partagez votre parcours, expertise et spécialités..." value={formData.biography} onChange={e => setFormData(prev => ({
+        ...prev,
+        biography: e.target.value
+      }))}></textarea>
+        <p className="mt-1 text-xs text-gray-400">
+          Cette biographie sera visible par les autres professionnels sur la
+          plateforme
+        </p>
+      </div>
+    </div>;
+  // Step 3/4: Documents upload
+  const renderDocumentsStep = () => <div className="space-y-4">
+      <FileUpload label="Diplôme médical" required />
+      <FileUpload label={userType === 'etudiant' ? 'Carte étudiant' : 'Carte professionnelle'} required />
+      {userType === 'etudiant' && <FileUpload label="Certificat de scolarité" required />}
+      {userType === 'expert' && <FileUpload label="CV détaillé" required />}
+      <div className="space-y-3 mt-6">
+        <div className="flex items-start">
+          <div className="flex items-center h-5">
+            <input id="terms" name="terms" type="checkbox" className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-[#00A7A7] focus:ring-[#00A7A7] focus:ring-offset-gray-800" />
+          </div>
+          <div className="ml-3">
+            <label htmlFor="terms" className="text-sm text-gray-300">
+              J'accepte les{' '}
+              <a href="#" className="text-[#00A7A7] hover:text-[#008B8B]">
+                conditions d'utilisation
+              </a>{' '}
+              et la{' '}
+              <a href="#" className="text-[#00A7A7] hover:text-[#008B8B]">
+                politique de confidentialité
+              </a>
+            </label>
+          </div>
+        </div>
+        <div className="flex items-start">
+          <div className="flex items-center h-5">
+            <input id="rgpd" name="rgpd" type="checkbox" className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-[#00A7A7] focus:ring-[#00A7A7] focus:ring-offset-gray-800" />
+          </div>
+          <div className="ml-3">
+            <label htmlFor="rgpd" className="text-sm text-gray-300">
+              J'accepte le traitement de mes données selon les normes RGPD
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>;
+  // Render the current step content based on user type and step
+  const renderStepContent = () => {
+    if (currentStep === 0) {
+      return renderPersonalInfoStep();
+    } else if (currentStep === 1) {
+      return renderProfessionalInfoStep();
+    } else if (currentStep === 2 && userType === 'expert') {
+      return renderExpertiseProfileStep();
+    } else {
+      return renderDocumentsStep();
+    }
+  };
+  // Render the registration form with steps
+  const renderRegistrationForm = () => {
+    const steps = getSteps();
+    const isLastStep = currentStep === steps.length - 1;
+    return <div className="w-full max-w-2xl mx-auto">
+        <div className="mb-8">
+          <Stepper steps={steps} currentStep={currentStep} />
+        </div>
+        <form onSubmit={handleSubmit}>
+          {renderStepContent()}
+          <div className="flex justify-between mt-8">
+            <button type="button" onClick={handleBack} className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors duration-300">
+              <ArrowLeftIcon size={16} className="mr-1.5" />
+              Retour
+            </button>
+            {!isLastStep ? <button type="button" onClick={handleNext} className="flex items-center px-4 py-2 text-sm font-medium text-white bg-[#00A7A7] rounded-lg hover:bg-[#008B8B] transition-colors duration-300">
+                Suivant
+                <ChevronRightIcon size={16} className="ml-1.5" />
+              </button> : <button type="submit" className="flex items-center px-6 py-2 text-sm font-medium text-white bg-[#00A7A7] rounded-lg hover:bg-[#008B8B] transition-colors duration-300">
+                Créer mon compte
+              </button>}
+          </div>
+        </form>
+      </div>;
+  };
+  return <BackgroundAnimation>
+      <div className="flex flex-col items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-4xl">
+          <div className="mb-8">
+            <Logo />
+          </div>
+          <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-lg p-8 border border-gray-200">
+            <h2 className="text-xl font-bold text-gray-800 mb-6 text-center">
+              {userType ? 'Inscription' : 'MediCollab'}
+            </h2>
+            {userType === null ? renderUserTypeSelection() : renderRegistrationForm()}
+          </div>
+          <div className="mt-6 text-center">
+            <p className="text-xs text-gray-500 flex items-center justify-center">
+              <span className="mr-1">🔒</span> Vérification sous 24h
+            </p>
+            <p className="text-sm text-gray-600 mt-4">
+              Déjà inscrit ?{' '}
+              <Link to="/" className="text-[#00A7A7] hover:text-[#008B8B] font-medium transition-colors duration-300">
+                Se connecter
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    </BackgroundAnimation>;
 };
+export default Register;

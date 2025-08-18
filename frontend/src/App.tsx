@@ -7,10 +7,10 @@ import { CaseView } from './pages/CaseView';
 import { Profile } from './pages/Profile';
 import { ExpertDirectory } from './pages/ExpertDirectory';
 import { AIAssistant } from './pages/AIAssistant';
-import { Login } from './pages/Login';
+import Login  from './pages/Login';
 import { LandingPage } from './pages/LandingPage';
 import { NewCase } from './pages/NewCase';
-import { Register } from './pages/Register';
+import  Register  from './pages/register';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 export function App() {
