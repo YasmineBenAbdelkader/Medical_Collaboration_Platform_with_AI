@@ -12,6 +12,7 @@ import { LandingPage } from './pages/LandingPage';
 import { ContactUs } from './pages/ContactUs.tsx';
 import { Blog } from './pages/Blog';
 import { NewCase } from './pages/NewCase';
+import { Register } from './pages/Register';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 export function App() {
@@ -23,6 +24,7 @@ export function App() {
           <Route path="/contactUs" element={<ContactUs />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route
             path="/*"
             element={

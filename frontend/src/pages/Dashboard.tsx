@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react';
 import { CaseCard } from '../components/ui/CaseCard';
-import { FilterIcon, PlusCircleIcon, TrendingUpIcon, ClockIcon, UsersIcon, MessageCircleIcon, StarIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { getCases, seedCasesIfEmpty } from '../services/storage';
+import { FilterIcon, PlusCircleIcon, TrendingUpIcon, ClockIcon, UsersIcon, MessageCircleIcon, StarIcon, Trash2Icon, MoreVerticalIcon, PencilIcon } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { getCases, seedCasesIfEmpty, deleteCaseById } from '../services/storage';
 import type { StoredCase } from '../services/storage';
+import { useAuth } from '../contexts/AuthContext';
 
 export const Dashboard = () => {
   const [cases, setCases] = useState<StoredCase[]>([]);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const refresh = () => setCases(getCases());
 
   useEffect(() => {
     seedCasesIfEmpty();
-    setCases(getCases());
+    refresh();
   }, []);
 
   const formatRelative = (timestamp: number) => {
@@ -47,63 +53,109 @@ export const Dashboard = () => {
     { id: 4, name: 'Dr. Sophie Martin', specialty: 'Neurologie', avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80' }
   ];
 
+  const handleDelete = (id: string, ownerId: string) => {
+    if (!user || user.id !== ownerId) return;
+    const ok = confirm('Supprimer cette publication ? Cette action est irréversible.');
+    if (!ok) return;
+    const success = deleteCaseById(id, user.id);
+    if (success) refresh();
+    setOpenMenuId(null);
+  };
+
+  const handleEdit = (id: string) => {
+    // TODO: brancher vers une vraie page d'édition avec pré-remplissage
+    navigate(`/case/new?edit=${id}`);
+    setOpenMenuId(null);
+  };
+
   return (
     <div className="flex max-w-7xl mx-auto">
       {/* Contenu principal */}
       <div className="flex-1 pr-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
-          <div className="flex space-x-3">
-            <button className="flex items-center text-gray-700 bg-white px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50">
-              <FilterIcon size={18} className="mr-2" />
-              Filtres
-            </button>
-            <Link to="/case/new" className="flex items-center text-white bg-blue-600 px-4 py-2 rounded-md hover:bg-blue-700">
-              <PlusCircleIcon size={18} className="mr-2" />
-              Nouveau cas
-            </Link>
-          </div>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
+        <div className="flex space-x-3">
+          <button className="flex items-center text-gray-700 bg-white px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50">
+            <FilterIcon size={18} className="mr-2" />
+            Filtres
+          </button>
+          <Link to="/case/new" className="flex items-center text-white bg-blue-600 px-4 py-2 rounded-md hover:bg-blue-700">
+            <PlusCircleIcon size={18} className="mr-2" />
+            Nouveau cas
+          </Link>
         </div>
+      </div>
         
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-3">
-            Votre spécialité: Cardiologie
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            <button className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-              Tous les cas
-            </button>
-            <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-800">
-              Cas urgents
-            </button>
-            <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-800">
-              Non résolus
-            </button>
-            <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-800">
-              Récemment actifs
-            </button>
-            <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-800">
-              Sauvegardés
-            </button>
-          </div>
+      <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <h2 className="text-lg font-medium text-gray-900 mb-3">
+          Votre spécialité: Cardiologie
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          <button className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+            Tous les cas
+          </button>
+          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-800">
+            Cas urgents
+          </button>
+          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-800">
+            Non résolus
+          </button>
+          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-800">
+            Récemment actifs
+          </button>
+          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-800">
+            Sauvegardés
+          </button>
         </div>
+      </div>
         
-        <div className="space-y-4">
+      <div className="space-y-4">
           {cases.map(c => (
-            <CaseCard
-              key={c.id}
-              id={c.id}
-              title={c.title}
-              excerpt={c.excerpt}
-              author={c.author}
-              date={formatRelative(c.createdAt)}
-              commentCount={c.commentCount}
-              likeCount={c.likeCount}
-              hasImage={c.hasImage}
-              imageUrl={c.imageUrl}
-              tags={c.tags}
-              isUrgent={c.isUrgent}
-            />
+            <div key={c.id} className="relative group">
+              {user && user.id === c.author.id && (
+                <div className="absolute top-3 right-3">
+                  <button
+                    onClick={() => setOpenMenuId(openMenuId === c.id ? null : c.id)}
+                    title="Options de la publication"
+                    className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 bg-white/90 backdrop-blur shadow hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 opacity-0 group-hover:opacity-100 transition"
+                  >
+                    <MoreVerticalIcon size={18} className="text-gray-600" />
+                  </button>
+                  {openMenuId === c.id && (
+                    <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-10">
+                      <button
+                        onClick={() => handleEdit(c.id)}
+                        className="w-full flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      >
+                        <PencilIcon size={16} className="mr-2 text-gray-500" />
+                        Modifier la publication
+                      </button>
+                      <div className="my-1 h-px bg-gray-100"></div>
+                      <button
+                        onClick={() => handleDelete(c.id, c.author.id)}
+                        className="w-full flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2Icon size={16} className="mr-2" />
+                        Supprimer
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+              <CaseCard
+                id={c.id}
+                title={c.title}
+                excerpt={c.excerpt}
+                author={c.author}
+                date={formatRelative(c.createdAt)}
+                commentCount={c.commentCount}
+                likeCount={c.likeCount}
+                hasImage={c.hasImage}
+                imageUrl={c.imageUrl}
+                tags={c.tags}
+                isUrgent={c.isUrgent}
+              />
+            </div>
           ))}
           {cases.length === 0 && (
             <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
