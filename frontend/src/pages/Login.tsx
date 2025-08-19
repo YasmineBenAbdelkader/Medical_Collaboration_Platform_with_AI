@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MailIcon, LockIcon, ShieldIcon } from 'lucide-react';
 import { BackgroundAnimation } from '../components/ui/BackgroundAnimation';
 import { FormInput } from '../components/ui/FormInput';
@@ -10,6 +10,7 @@ const Login = () => {
   const [twoFactorCode, setTwoFactorCode] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showTwoFactor, setShowTwoFactor] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +23,8 @@ const Login = () => {
     } else {
       // Second step: validate 2FA code
       console.log('Step 2: 2FA validation', { email, password, twoFactorCode, rememberMe });
+      // Redirection vers le dashboard après authentification réussie
+      navigate('/dashboard');
     }
   };
 
@@ -47,7 +50,7 @@ const Login = () => {
                     id="email"
                     label="Email"
                     type="email"
-                    placeholder="dr.nom@hopital.fr"
+                    placeholder="dr.nom@hopital.tn"
                     icon={<MailIcon size={18} />}
                     required
                     value={email}
@@ -132,7 +135,7 @@ const Login = () => {
                     <input
                       id="2fa-code"
                       type="text"
-                      maxLength="6"
+                      maxLength={6}
                       placeholder="123456"
                       className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00A7A7] focus:border-transparent transition-all duration-300 text-center text-lg font-mono"
                       required
