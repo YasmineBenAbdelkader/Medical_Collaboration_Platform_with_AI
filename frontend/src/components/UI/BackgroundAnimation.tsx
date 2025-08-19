@@ -24,6 +24,8 @@ export const BackgroundAnimation = ({
       </div>
       {/* Medical pattern */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48cGF0aCBkPSJNMjYgMjZWMTRoOHYxMmgxMnY4SDM0djEyaC04VjM0SDE0di04aDEyeiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBBN0E3IiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuMDUiLz48L3N2Zz4=')] opacity-10"></div>
+      {/* Animated Light Halo */}
+      <div className="pointer-events-none absolute top-1/3 left-1/2 w-[600px] h-[200px] bg-gradient-to-r from-[#00A7A7]/30 via-white/40 to-[#2563eb]/30 rounded-full blur-3xl opacity-40 animate-halo-move"></div>
       {/* Content */}
       <div className="relative z-10 w-full">{children}</div>
       {/* CSS for animations */}
@@ -64,6 +66,23 @@ export const BackgroundAnimation = ({
         }
         .animation-delay-4000 {
           animation-delay: 4s;
+        }
+        @keyframes haloMove {
+          0% {
+            transform: translateX(-40%) scale(1);
+            opacity: 0.4;
+          }
+          50% {
+            transform: translateX(40%) scale(1.1);
+            opacity: 0.6;
+          }
+          100% {
+            transform: translateX(-40%) scale(1);
+            opacity: 0.4;
+          }
+        }
+        .animate-halo-move {
+          animation: haloMove 18s ease-in-out infinite;
         }
       `}</style>
     </div>;
