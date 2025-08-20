@@ -1,24 +1,33 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Facebook, Twitter, Linkedin, Instagram, BrainCircuit } from 'lucide-react';
+import type { RefObject } from 'react';
 
 type FooterProps = {
   appName?: string;
   description?: string;
-  scrollToSection?: (id: string) => void; // fonction pour scroll
+  scrollToSection?: (ref: RefObject<HTMLElement | null>, section: string) => void;
+  homeRef?: RefObject<HTMLElement | null>;
+  aboutRef?: RefObject<HTMLElement | null>;
+  servicesRef?: RefObject<HTMLElement | null>;
+  whyUsRef?: RefObject<HTMLElement | null>;
 };
 
 export const Footer = ({
   appName = 'MedCollabIA',
   description = "Plateforme de collaboration médicale et d'assistance IA pour partager des cas cliniques et améliorer les décisions.",
-  scrollToSection
+  scrollToSection,
+  homeRef,
+  aboutRef,
+  servicesRef,
+  whyUsRef
 }: FooterProps) => {
   const navigate = useNavigate();
 
-  const handleScroll = (section: string) => {
-    if (scrollToSection) {
-      scrollToSection(section);
-    } else {
-      navigate('/home'); // fallback
+  const handleClick = (ref?: RefObject<HTMLElement | null>, section?: string, fallbackPath?: string) => {
+    if (ref && section && scrollToSection) {
+      scrollToSection(ref, section);
+    } else if (fallbackPath) {
+      navigate(fallbackPath);
     }
   };
 
@@ -53,40 +62,56 @@ export const Footer = ({
               </a>
             </div>
           </div>
-
           {/* Plateforme */}
           <div className="min-w-[200px]">
             <h3 className="text-sm font-semibold tracking-wider text-[#00A7A7] uppercase border-b border-[#00A7A7]/30 pb-2 mb-4">Plateforme</h3>
             <ul className="space-y-3 text-gray-700 w-max">
-              <li><button onClick={() => handleScroll('home')} className="hover:text-[#00A7A7]">Accueil</button></li>
-              <li><button onClick={() => handleScroll('about')} className="hover:text-[#00A7A7]">À propos</button></li>
-              <li><button onClick={() => handleScroll('services')} className="hover:text-[#00A7A7]">Services</button></li>
-              <li><button onClick={() => handleScroll('whyUs')} className="hover:text-[#00A7A7]">Pourquoi nous</button></li>
+              <li><button onClick={() => handleClick(homeRef, 'home', '/home')} className="hover:text-[#00A7A7]">Accueil</button></li>
+              <li><button onClick={() => handleClick(aboutRef, 'about', '/home')} className="hover:text-[#00A7A7]">À propos</button></li>
+              <li><button onClick={() => handleClick(servicesRef, 'services', '/home')} className="hover:text-[#00A7A7]">Services</button></li>
+              <li><button onClick={() => handleClick(whyUsRef, 'whyUs', '/home')} className="hover:text-[#00A7A7]">Pourquoi nous</button></li>
             </ul>
           </div>
-
           {/* Ressources */}
           <div className="min-w-[200px]">
             <h3 className="text-sm font-semibold tracking-wider text-[#00A7A7] uppercase border-b border-[#00A7A7]/30 pb-2 mb-4">Ressources</h3>
             <ul className="space-y-3 text-gray-700 w-max">
-              <li><button onClick={() => navigate('/blog')} className="hover:text-[#00A7A7]">Blog</button></li>
-              <li><button onClick={() => navigate('/contactUs')} className="hover:text-[#00A7A7]">Contact</button></li>
+              <li>
+                <button
+                  onClick={() => {
+                    navigate('/blog');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-[#00A7A7]"
+                >
+                  Blog
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    navigate('/contactUs');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-[#00A7A7]"
+                >
+                  Contact
+                </button>
+              </li>
               <li><a href="#" className="hover:text-[#00A7A7]">FAQ</a></li>
             </ul>
           </div>
-
           {/* Spécialités */}
           <div className="min-w-[200px]">
             <h3 className="text-sm font-semibold tracking-wider text-[#00A7A7] uppercase border-b border-[#00A7A7]/30 pb-2 mb-4">Spécialités</h3>
             <ul className="space-y-3 text-gray-700 w-max">
-              <li><Link className="hover:text-[#00A7A7]" to="/blog?specialty=Cardiologie">Cardiologie</Link></li>
-              <li><Link className="hover:text-[#00A7A7]" to="/blog?specialty=Neurologie">Neurologie</Link></li>
-              <li><Link className="hover:text-[#00A7A7]" to="/blog?specialty=Radiologie">Radiologie</Link></li>
-              <li><Link className="hover:text-[#00A7A7]" to="/blog?specialty=Oncologie">Oncologie</Link></li>
+              <li><button onClick={() => navigate('/blog?specialty=Cardiologie')} className="hover:text-[#00A7A7]">Cardiologie</button></li>
+              <li><button onClick={() => navigate('/blog?specialty=Neurologie')} className="hover:text-[#00A7A7]">Neurologie</button></li>
+              <li><button onClick={() => navigate('/blog?specialty=Radiologie')} className="hover:text-[#00A7A7]">Radiologie</button></li>
+              <li><button onClick={() => navigate('/blog?specialty=Oncologie')} className="hover:text-[#00A7A7]">Oncologie</button></li>
             </ul>
           </div>
         </div>
-
         <div className="border-t border-[#00A7A7]/20 py-6 text-center text-gray-600">
           &copy; 2025 MedCollabIA. Tous droits réservés.
         </div>
