@@ -5,7 +5,8 @@ import { Footer } from '../components/shared/Footer';
 export const ContactUs = () => {
   const isTeal = true;
   const [form, setForm] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
     date: '',
@@ -20,54 +21,163 @@ export const ContactUs = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, just log. Hook up to backend or email service later.
     console.log('Contact form submitted:', form);
-    alert('Merci! Votre message a été envoyé.');
-    setForm({ name: '', email: '', phone: '', date: '', subject: '', message: '' });
+    alert('✅ Merci! Votre message a été envoyé.');
+    setForm({ firstName: '', lastName: '', email: '', phone: '', date: '', subject: '', message: '' });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar isTeal={isTeal} logoSrc="/vite.svg" brandTitle="MedCollab" brandSubtitle="Collaboration médicale" />
-      <div className="py-12">
-      <div className="max-w-3xl mx-auto bg-white shadow-sm rounded-lg p-6 md:p-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Contactez-nous</h1>
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <div className="md:col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
-            <input name="name" value={form.name} onChange={handleChange} required className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Votre nom" />
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Navbar
+        isTeal={isTeal}
+        logoSrc="/vite.svg"
+        brandTitle="MedCollab"
+        brandSubtitle="Collaboration médicale"
+      />
+
+      {/* Form */}
+      <div className="flex-grow py-12 px-4">
+        <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl p-8 md:p-10">
+          
+          {/* Titre et description */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Contactez-nous</h1>
+            <p className="mt-2 text-lg text-gray-600">Nous sommes là pour vous aider</p>
           </div>
-          <div className="md:col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input type="email" name="email" value={form.email} onChange={handleChange} required className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="vous@email.com" />
-          </div>
-          <div className="md:col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
-            <input name="phone" value={form.phone} onChange={handleChange} className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="+33 ..." />
-          </div>
-          <div className="md:col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-            <input type="date" name="date" value={form.date} onChange={handleChange} className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500" />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Sujet</label>
-            <input name="subject" value={form.subject} onChange={handleChange} className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Sujet" />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-            <textarea name="message" value={form.message} onChange={handleChange} rows={6} className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Votre message" />
-          </div>
-          <div className="md:col-span-2">
-            <button type="submit" className="inline-flex items-center px-6 py-3 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-              Envoyer
-            </button>
-          </div>
-        </form>
+
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            {/* Nom */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+              <input
+                name="lastName"
+                value={form.lastName}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 text-gray-900 
+                           placeholder-gray-400 shadow-sm 
+                           focus:outline-none focus:border-[#00A7A7] focus:ring-2 focus:ring-[#00A7A7] 
+                           transition duration-200"
+                placeholder="Votre nom"
+              />
+            </div>
+
+            {/* Prénom */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+              <input
+                name="firstName"
+                value={form.firstName}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 text-gray-900 
+                           placeholder-gray-400 shadow-sm 
+                           focus:outline-none focus:border-[#00A7A7] focus:ring-2 focus:ring-[#00A7A7] 
+                           transition duration-200"
+                placeholder="Votre prénom"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 text-gray-900 
+                           placeholder-gray-400 shadow-sm 
+                           focus:outline-none focus:border-[#00A7A7] focus:ring-2 focus:ring-[#00A7A7] 
+                           transition duration-200"
+                placeholder="vous@email.com"
+              />
+            </div>
+
+            {/* Téléphone */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+              <input
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 text-gray-900 
+                           placeholder-gray-400 shadow-sm 
+                           focus:outline-none focus:border-[#00A7A7] focus:ring-2 focus:ring-[#00A7A7] 
+                           transition duration-200"
+                placeholder="+216 ........................................................................................"
+              />
+            </div>
+
+            {/* Date */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+              <input
+                type="date"
+                name="date"
+                value={form.date}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 text-gray-900 
+                           shadow-sm 
+                           focus:outline-none focus:border-[#00A7A7] focus:ring-2 focus:ring-[#00A7A7] 
+                           transition duration-200"
+              />
+            </div>
+
+            {/* Sujet */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Sujet</label>
+              <input
+                name="subject"
+                value={form.subject}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 text-gray-900 
+                           placeholder-gray-400 shadow-sm 
+                           focus:outline-none focus:border-[#00A7A7] focus:ring-2 focus:ring-[#00A7A7] 
+                           transition duration-200"
+                placeholder="Sujet"
+              />
+            </div>
+
+            {/* Message */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+              <textarea
+                name="message"
+                value={form.message}
+                onChange={handleChange}
+                rows={6}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 text-gray-900 
+                           placeholder-gray-400 shadow-sm resize-none
+                           focus:outline-none focus:border-[#00A7A7] focus:ring-2 focus:ring-[#00A7A7] 
+                           transition duration-200"
+                placeholder="Votre message..."
+              />
+            </div>
+
+            {/* Submit */}
+            <div className="md:col-span-2 flex justify-center">
+              <button
+                type="submit"
+                className="inline-flex items-center px-8 py-3 rounded-xl bg-[#00A7A7] text-white font-semibold 
+                           shadow-md hover:bg-teal-700 transition-colors duration-200 
+                           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A7A7]"
+              >
+                Envoyer le message
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-      </div>
-      <Footer appName="MedCollab" description="Plateforme de collaboration médicale et d'assistance IA pour partager des cas cliniques et améliorer les décisions." />
+
+      <Footer
+        appName="MedCollab"
+        description="Plateforme de collaboration médicale et d'assistance IA pour partager des cas cliniques et améliorer les décisions."
+      />
     </div>
   );
 };
-
-
