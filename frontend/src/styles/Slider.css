@@ -1,0 +1,5 @@
+/* slider.css */
+.slick-dots li.slick-active div {
+	background-color: #00A7A7 !important;
+	transform: scale(1.4);
+  }
