@@ -108,7 +108,7 @@ export const Navbar = ({
           <div className="flex items-center space-x-4">
             <Link to="/login" className={`font-medium ${baseLinkClass}`}>Se connecter</Link>
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/register')}
               className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                 isTeal
                   ? 'text-teal-600 bg-white hover:bg-teal-50 focus:ring-teal-200'
