@@ -135,7 +135,7 @@ export const CaseCard: React.FC<CaseCardProps> = ({
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
             {tags.map((tag, index) => (
-              <span key={index} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+              <span key={index} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#00A7A7]/10 text-[#00A7A7]">
                 {tag}
               </span>
             ))}
@@ -144,12 +144,12 @@ export const CaseCard: React.FC<CaseCardProps> = ({
         
         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
           <div className="flex space-x-4">
-            <button className="flex items-center text-gray-500 hover:text-blue-600">
+            <button className="flex items-center text-gray-500 hover:text-[#00A7A7]">
               <ThumbsUpIcon size={18} />
               <span className="ml-1 text-xs">{likeCount}</span>
             </button>
             <button 
-              className="flex items-center text-gray-500 hover:text-blue-600"
+              className="flex items-center text-gray-500 hover:text-[#00A7A7]"
               onClick={() => setShowComments(!showComments)}
             >
               <MessageSquareIcon size={18} />
@@ -162,10 +162,10 @@ export const CaseCard: React.FC<CaseCardProps> = ({
             </button>
           </div>
           <div className="flex space-x-2">
-            <button className="text-gray-500 hover:text-blue-600">
+            <button className="text-gray-500 hover:text-[#00A7A7]">
               <BookmarkIcon size={18} />
             </button>
-            <button className="text-gray-500 hover:text-blue-600">
+            <button className="text-gray-500 hover:text-[#00A7A7]">
               <ShareIcon size={18} />
             </button>
           </div>
@@ -187,7 +187,7 @@ export const CaseCard: React.FC<CaseCardProps> = ({
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Ajouter un commentaire..."
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#00A7A7] focus:border-transparent"
                     rows={2}
                     disabled={isSubmitting}
                   />
@@ -198,7 +198,7 @@ export const CaseCard: React.FC<CaseCardProps> = ({
                     <button
                       type="submit"
                       disabled={!newComment.trim() || isSubmitting}
-                      className="flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="flex items-center px-3 py-1.5 text-sm font-medium text-white bg-[#00A7A7] rounded-lg hover:bg-[#009393] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {isSubmitting ? (
                         <>
@@ -232,7 +232,7 @@ export const CaseCard: React.FC<CaseCardProps> = ({
                         <div className="flex items-center space-x-2">
                           <Link 
                             to={`/profile/${comment.author.id}`}
-                            className="text-sm font-medium text-gray-900 hover:text-blue-600"
+                            className="text-sm font-medium text-gray-900 hover:text-[#00A7A7]"
                           >
                             {comment.author.name}
                           </Link>
@@ -244,11 +244,11 @@ export const CaseCard: React.FC<CaseCardProps> = ({
                       <p className="text-sm text-gray-700">{comment.text}</p>
                     </div>
                     <div className="flex items-center mt-2 space-x-4">
-                      <button className="flex items-center text-xs text-gray-500 hover:text-blue-600">
+                      <button className="flex items-center text-xs text-gray-500 hover:text-[#00A7A7]">
                         <ThumbsUpIcon size={14} className="mr-1" />
                         {comment.likes}
                       </button>
-                      <button className="text-xs text-gray-500 hover:text-blue-600">
+                      <button className="text-xs text-gray-500 hover:text-[#00A7A7]">
                         Répondre
                       </button>
                     </div>

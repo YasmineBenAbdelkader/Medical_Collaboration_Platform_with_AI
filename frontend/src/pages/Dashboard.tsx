@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CaseCard } from '../components/ui/CaseCard';
-import { FilterIcon, PlusCircleIcon, TrendingUpIcon, ClockIcon, UsersIcon, MessageCircleIcon, StarIcon, Trash2Icon, MoreVerticalIcon, PencilIcon } from 'lucide-react';
+import { FilterIcon, PlusCircleIcon, TrendingUpIcon, ClockIcon, UsersIcon, MessageCircleIcon, StarIcon, Trash2Icon, MoreVerticalIcon, PencilIcon, CheckIcon, XIcon, SendIcon, UserPlusIcon, Activity as ActivityIcon, HeartPulse as HeartPulseIcon, AlertTriangle as AlertTriangleIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getCases, seedCasesIfEmpty, deleteCaseById } from '../services/storage';
 import type { StoredCase } from '../services/storage';
@@ -68,6 +68,89 @@ export const Dashboard = () => {
     setOpenMenuId(null);
   };
 
+  type ConnectionRequest = {
+    id: string;
+    name: string;
+    role: 'Étudiant' | 'Médecin' | 'Expert';
+    specialty?: string;
+    avatar: string;
+    message?: string;
+    since: string;
+  };
+
+  type SentRequest = {
+    id: string;
+    name: string;
+    role: 'Étudiant' | 'Médecin' | 'Expert';
+    specialty?: string;
+    avatar: string;
+    status: 'en_attente' | 'acceptée' | 'refusée';
+    sentAt: string;
+  };
+
+  const [receivedRequests, setReceivedRequests] = useState<ConnectionRequest[]>([
+    {
+      id: 'r1',
+      name: 'Amine El Idrissi',
+      role: 'Étudiant',
+      specialty: '6ème année Médecine',
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=300&auto=format&fit=crop',
+      message: 'Demande de connexion pour suivre vos cas cardiologiques',
+      since: "Il y a 5 min"
+    },
+    {
+      id: 'r2',
+      name: 'Dr. Salma Rahimi',
+      role: 'Médecin',
+      specialty: 'Dermatologie',
+      avatar: 'https://images.unsplash.com/photo-1548898263-2f8a9d5b77f4?q=80&w=300&auto=format&fit=crop',
+      message: 'Souhaite collaborer sur des cas multi-disciplinaires',
+      since: 'Il y a 1 h'
+    }
+  ]);
+
+  const [sentRequests, setSentRequests] = useState<SentRequest[]>([
+    {
+      id: 's1',
+      name: 'Dr. Youssef B.',
+      role: 'Expert',
+      specialty: 'Électrophysiologie',
+      avatar: 'https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=300&auto=format&fit=crop',
+      status: 'en_attente',
+      sentAt: 'Hier'
+    },
+    {
+      id: 's2',
+      name: 'Dr. Nadia K.',
+      role: 'Médecin',
+      specialty: 'Radiologie',
+      avatar: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=300&auto=format&fit=crop',
+      status: 'acceptée',
+      sentAt: 'Il y a 2 j'
+    },
+    {
+      id: 's3',
+      name: 'Omar S.',
+      role: 'Étudiant',
+      specialty: 'Interne',
+      avatar: 'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=300&auto=format&fit=crop',
+      status: 'refusée',
+      sentAt: 'Il y a 3 j'
+    }
+  ]);
+
+  const acceptRequest = (id: string) => {
+    setReceivedRequests(prev => prev.filter(r => r.id !== id));
+  };
+
+  const rejectRequest = (id: string) => {
+    setReceivedRequests(prev => prev.filter(r => r.id !== id));
+  };
+
+  const cancelSentRequest = (id: string) => {
+    setSentRequests(prev => prev.filter(r => r.id !== id));
+  };
+
   return (
     <div className="flex max-w-7xl mx-auto">
       {/* Contenu principal */}
@@ -79,33 +162,134 @@ export const Dashboard = () => {
             <FilterIcon size={18} className="mr-2" />
             Filtres
           </button>
-          <Link to="/case/new" className="flex items-center text-white bg-blue-600 px-4 py-2 rounded-md hover:bg-blue-700">
+          <Link to="/case/new" className="flex items-center text-white bg-teal-600 px-4 py-2 rounded-md hover:bg-teal-700">
             <PlusCircleIcon size={18} className="mr-2" />
             Nouveau cas
           </Link>
         </div>
       </div>
+
+      {/* En-tête Cardiologie */}
+      <div className="relative mb-6 overflow-hidden rounded-xl border border-teal-600/30 bg-gradient-to-r from-teal-600 to-rose-500">
+        <div className="absolute inset-0 opacity-30">
+          <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+            <polyline fill="none" stroke="white" strokeWidth="3" points="0,100 80,100 100,40 120,160 140,100 220,100 240,60 260,140 280,100 360,100 380,30 400,170 420,100 520,100 540,50 560,150 580,100 800,100" />
+          </svg>
+        </div>
+        <div className="relative z-10 p-5 sm:p-6 text-white flex items-center justify-between">
+          <div>
+            <div className="flex items-center mb-1">
+              <HeartPulseIcon size={22} className="mr-2" />
+              <span className="uppercase text-xs tracking-wider opacity-90">Service</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-semibold">Cardiologie — vue d'ensemble</h2>
+            <p className="text-white/90 text-sm mt-1">Suivi des ECG, urgences cardiaques et collaborations entre spécialistes.</p>
+          </div>
+          <div className="hidden sm:flex items-center space-x-2">
+            <Link to="/case/new" className="inline-flex items-center bg-white/95 text-teal-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-white">
+              <ActivityIcon size={16} className="mr-2" />
+              Analyser un ECG
+            </Link>
+            <button className="inline-flex items-center bg-white/10 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-white/20 border border-white/20">
+              <AlertTriangleIcon size={16} className="mr-2" />
+              Urgence STEMI
+            </button>
+          </div>
+        </div>
+      </div>
         
       <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-3">
-          Votre spécialité: Cardiologie
+        <h2 className="text-lg font-medium text-gray-900 mb-3 mb-2">
+          Cardiologie
         </h2>
         <div className="flex flex-wrap gap-2">
-          <button className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-            Tous les cas
-          </button>
-          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-800">
-            Cas urgents
-          </button>
-          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-800">
-            Non résolus
-          </button>
-          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-800">
-            Récemment actifs
-          </button>
-          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-800">
-            Sauvegardés
-          </button>
+          <button className="bg-teal-600/10 text-teal-600 px-3 py-1 rounded-full text-sm font-medium">Tous les cas</button>
+          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">Urgences cardiaques</button>
+          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">ECG à analyser</button>
+          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">Post-angioplastie</button>
+          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">Insuffisance cardiaque</button>
+        </div>
+      </div>
+
+
+      {/* Demandes de connexion */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Reçues */}
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-medium text-gray-900 flex items-center">
+              <UserPlusIcon size={20} className="mr-2 text-teal-600" />
+              Demandes de connexion reçues
+            </h3>
+            <span className="text-xs px-2 py-1 rounded-full bg-teal-600/10 text-teal-600">{receivedRequests.length}</span>
+          </div>
+          <div className="space-y-3">
+            {receivedRequests.length === 0 && (
+              <p className="text-sm text-gray-500">Aucune demande en attente.</p>
+            )}
+            {receivedRequests.map(req => (
+              <div key={req.id} className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <img src={req.avatar} alt={req.name} className="w-10 h-10 rounded-full object-cover" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{req.name} <span className="text-xs text-gray-500">• {req.role}</span></p>
+                    <p className="text-xs text-gray-500">{req.specialty}</p>
+                    {req.message && <p className="text-xs text-gray-600 mt-0.5">{req.message}</p>}
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button onClick={() => acceptRequest(req.id)} className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700">
+                    <CheckIcon size={14} className="mr-1" />
+                    Accepter
+                  </button>
+                  <button onClick={() => rejectRequest(req.id)} className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md text-red-600 bg-red-50 hover:bg-red-100">
+                    <XIcon size={14} className="mr-1" />
+                    Refuser
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Envoyées */}
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-medium text-gray-900 flex items-center">
+              <SendIcon size={20} className="mr-2 text-teal-600" />
+              Demandes envoyées
+            </h3>
+            <span className="text-xs px-2 py-1 rounded-full bg-teal-600/10 text-teal-600">{sentRequests.length}</span>
+          </div>
+          <div className="space-y-3">
+            {sentRequests.length === 0 && (
+              <p className="text-sm text-gray-500">Aucune demande envoyée.</p>
+            )}
+            {sentRequests.map(req => (
+              <div key={req.id} className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <img src={req.avatar} alt={req.name} className="w-10 h-10 rounded-full object-cover" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{req.name} <span className="text-xs text-gray-500">• {req.role}</span></p>
+                    <p className="text-xs text-gray-500">{req.specialty}</p>
+                    <p className="text-xs mt-0.5">
+                      <span className={
+                        req.status === 'en_attente' ? 'text-amber-600' : req.status === 'acceptée' ? 'text-green-600' : 'text-red-600'
+                      }>
+                        {req.status === 'en_attente' ? 'En attente' : req.status === 'acceptée' ? 'Acceptée' : 'Refusée'}
+                      </span>
+                      <span className="text-gray-400"> • {req.sentAt}</span>
+                    </p>
+                  </div>
+                </div>
+                {req.status === 'en_attente' && (
+                  <button onClick={() => cancelSentRequest(req.id)} className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200">
+                    Annuler
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
         
@@ -117,7 +301,7 @@ export const Dashboard = () => {
                   <button
                     onClick={() => setOpenMenuId(openMenuId === c.id ? null : c.id)}
                     title="Options de la publication"
-                    className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 bg-white/90 backdrop-blur shadow hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 opacity-0 group-hover:opacity-100 transition"
+                    className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 bg-white/90 backdrop-blur shadow hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-600/40 opacity-0 group-hover:opacity-100 transition"
                   >
                     <MoreVerticalIcon size={18} className="text-gray-600" />
                   </button>
@@ -160,7 +344,7 @@ export const Dashboard = () => {
           {cases.length === 0 && (
             <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
               <p className="text-gray-600 mb-2">Aucun cas à afficher pour le moment.</p>
-              <Link to="/case/new" className="text-blue-600 hover:text-blue-700 font-medium">Publier un premier cas →</Link>
+              <Link to="/case/new" className="text-teal-600 hover:text-teal-700 font-medium">Publier un premier cas →</Link>
             </div>
           )}
         </div>
@@ -172,7 +356,7 @@ export const Dashboard = () => {
           {/* Statistiques */}
           <div className="bg-white rounded-lg border border-gray-200 p-4">
             <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-              <TrendingUpIcon size={20} className="mr-2 text-blue-600" />
+              <TrendingUpIcon size={20} className="mr-2 text-teal-600" />
               Statistiques
             </h3>
             <div className="space-y-3">
@@ -190,7 +374,7 @@ export const Dashboard = () => {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Experts actifs</span>
-                <span className="font-semibold text-blue-600">{stats.activeExperts}</span>
+                <span className="font-semibold text-teal-600">{stats.activeExperts}</span>
               </div>
             </div>
           </div>
@@ -198,13 +382,13 @@ export const Dashboard = () => {
           {/* Activité récente */}
           <div className="bg-white rounded-lg border border-gray-200 p-4">
             <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-              <ClockIcon size={20} className="mr-2 text-blue-600" />
+              <ClockIcon size={20} className="mr-2 text-teal-600" />
               Activité récente
             </h3>
             <div className="space-y-3">
               {recentActivity.map(activity => (
                 <div key={activity.id} className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="w-2 h-2 bg-teal-600 rounded-full mt-2 flex-shrink-0"></div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-700">{activity.text}</p>
                     <p className="text-xs text-gray-500 mt-1">Il y a {activity.time}</p>
@@ -217,7 +401,7 @@ export const Dashboard = () => {
           {/* Experts en ligne */}
           <div className="bg-white rounded-lg border border-gray-200 p-4">
             <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-              <UsersIcon size={20} className="mr-2 text-blue-600" />
+              <UsersIcon size={20} className="mr-2 text-teal-600" />
               Experts en ligne
             </h3>
             <div className="space-y-3">
@@ -235,21 +419,21 @@ export const Dashboard = () => {
                     <p className="text-sm font-medium text-gray-900">{expert.name}</p>
                     <p className="text-xs text-gray-500">{expert.specialty}</p>
                   </div>
-                  <button className="text-blue-600 hover:text-blue-700">
+                  <button className="text-teal-600 hover:text-teal-700">
                     <MessageCircleIcon size={16} />
                   </button>
                 </div>
               ))}
             </div>
-            <button className="w-full mt-3 text-sm text-blue-600 hover:text-blue-700 font-medium">
+            <button className="w-full mt-3 text-sm text-teal-600 hover:text-teal-700 font-medium">
               Voir tous les experts
             </button>
           </div>
 
           {/* Conseils IA */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-4">
+          <div className="bg-white rounded-lg border border-teal-600/30 p-4">
             <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-              <StarIcon size={20} className="mr-2 text-blue-600" />
+              <StarIcon size={20} className="mr-2 text-teal-600" />
               Conseil IA
             </h3>
             <p className="text-sm text-gray-700 mb-3">
@@ -257,7 +441,7 @@ export const Dashboard = () => {
             </p>
             <Link 
               to="/ai-assistant" 
-              className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700"
+              className="inline-flex items-center text-sm font-medium text-teal-600 hover:text-teal-700"
             >
               Utiliser l'assistant IA →
             </Link>
