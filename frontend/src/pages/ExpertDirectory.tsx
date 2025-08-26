@@ -4,7 +4,6 @@ import {
   Search,
   Award,
   MapPin,
-  Clock,
   Star,
   MessageCircle,
   Building,
@@ -24,12 +23,9 @@ export const ExpertDirectory = () => {
       hospital: "Hôpital Louis Pradel",
       avatar:
         "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-      responseTime: "< 24h",
-      rating: 4.9,
       reviewCount: 124,
       isOnline: true,
       verified: true,
-      isConnection: true,
     },
     {
       id: "2",
@@ -40,12 +36,9 @@ export const ExpertDirectory = () => {
       hospital: "Pitié-Salpêtrière",
       avatar:
         "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-      responseTime: "< 48h",
-      rating: 4.7,
       reviewCount: 98,
       isOnline: false,
       verified: true,
-      isConnection: false,
     },
   ];
 
@@ -55,9 +48,7 @@ export const ExpertDirectory = () => {
       expert.specialty.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesFilter =
-      activeFilter === "all" ||
-      (activeFilter === "connections" && expert.isConnection) ||
-      (activeFilter === "available" && expert.isOnline);
+      activeFilter === "all" || (activeFilter === "available" && expert.isOnline);
 
     return matchesSearch && matchesFilter;
   });
@@ -68,7 +59,7 @@ export const ExpertDirectory = () => {
       <div className="text-center mb-12">
         <h1 className="text-4xl font-light text-gray-900 mb-3">
           Annuaire des{" "}
-          <span className="font-semibold text-blue-500">experts</span>
+          <span className="font-semibold text-[#00A7A7]">experts</span>
         </h1>
         <p className="text-gray-500 text-lg max-w-xl mx-auto">
           Trouvez et contactez des experts médicaux qualifiés rapidement et
@@ -83,7 +74,7 @@ export const ExpertDirectory = () => {
           <input
             type="text"
             placeholder="Rechercher par nom ou spécialité..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-300 text-sm"
+            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-1 focus:ring-[#00A7A7] text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -92,7 +83,6 @@ export const ExpertDirectory = () => {
         <div className="flex space-x-2 mt-4 md:mt-0 md:ml-6">
           {[
             { key: "all", label: "Tous" },
-            { key: "connections", label: "Connexions" },
             { key: "available", label: "Disponibles" },
           ].map((filter) => (
             <button
@@ -100,7 +90,7 @@ export const ExpertDirectory = () => {
               onClick={() => setActiveFilter(filter.key)}
               className={`px-4 py-1 text-sm rounded-full transition font-medium ${
                 activeFilter === filter.key
-                  ? "bg-blue-50 text-blue-600"
+                  ? "bg-[#00A7A7]/10 text-[#00A7A7]"
                   : "bg-white text-gray-500 hover:bg-gray-50"
               }`}
             >
@@ -134,25 +124,9 @@ export const ExpertDirectory = () => {
                   <h3 className="text-lg font-semibold text-gray-900">
                     {expert.name}
                   </h3>
-                  {expert.verified && <Award size={16} className="text-blue-400" />}
+                  {expert.verified && <Award size={16} className="text-[#ffc300]" />}
                 </div>
-                <p className="text-sm text-blue-500 mt-1">{expert.specialty}</p>
-                <div className="flex items-center mt-2 space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={14}
-                      className={`${
-                        i < Math.floor(expert.rating)
-                          ? "text-yellow-400 fill-current"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                  <span className="ml-1 text-xs text-gray-400">
-                    {expert.rating} ({expert.reviewCount})
-                  </span>
-                </div>
+                <p className="text-sm text-[#00A7A7] mt-1">{expert.specialty}</p>
               </div>
             </div>
 
@@ -161,7 +135,7 @@ export const ExpertDirectory = () => {
               {expert.expertise.map((item, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1 text-xs rounded-full bg-gray-50 text-gray-600 border border-gray-200"
+                  className="px-3 py-1 text-xs rounded-full bg-[#00A7A7]/10 text-[#00A7A7] border border-[#00A7A7]"
                 >
                   {item}
                 </span>
@@ -179,11 +153,10 @@ export const ExpertDirectory = () => {
                 <span>{expert.location}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Clock size={14} className="text-gray-400" />
-                <span className="text-green-500 font-medium">
-                  {expert.responseTime}
+                <Star size={14} className="text-yellow-400" />
+                <span className="font-medium text-[#00A7A7]">
+                  {expert.reviewCount} pubs répondues
                 </span>
-                <span className="text-gray-400">de réponse</span>
               </div>
             </div>
 
@@ -197,10 +170,10 @@ export const ExpertDirectory = () => {
               </Link>
               <Link
                 to={`/contact/${expert.id}`}
-                className="flex-1 flex items-center justify-center px-3 py-2 text-sm rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition"
+                className="flex-1 flex items-center justify-center px-3 py-2 text-sm rounded-lg text-white bg-[#00A7A7] hover:bg-[#008b8b] transition"
               >
                 <MessageCircle size={16} className="mr-1" />
-                Avis
+                Contacter
               </Link>
             </div>
           </div>
