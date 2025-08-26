@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from "react-router-dom";
 import { HomeIcon, FilesIcon, UsersIcon, MessageSquareIcon, BrainCircuitIcon, BarChartIcon, SettingsIcon, HelpCircleIcon, MenuIcon, XIcon } from 'lucide-react';
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -7,16 +8,25 @@ export function Sidebar() {
   const toggleMobileSidebar = () => setMobileOpen(!mobileOpen);
   const NavItem = ({
     icon: Icon,
-    label
+    label,
+    to
   }: {
     icon: React.ElementType;
     label: string;
-  }) => <li>
-      <a href="#" className={`flex items-center p-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all ${collapsed ? 'justify-center' : ''}`}>
+    to: string;
+  }) => (
+    <li>
+      <Link
+        to={to}
+        className={`flex items-center p-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all ${
+          collapsed ? "justify-center" : ""
+        }`}
+      >
         <Icon className="h-5 w-5" />
         {!collapsed && <span className="ml-3">{label}</span>}
-      </a>
-    </li>;
+      </Link>
+    </li>
+  );
   return <>
       {/* Mobile sidebar toggle */}
       <button className="fixed z-50 bottom-4 right-4 p-2 rounded-full bg-blue-600 text-white shadow-lg md:hidden" onClick={toggleMobileSidebar}>
@@ -37,17 +47,19 @@ export function Sidebar() {
         </div>
         <nav className="flex-1 overflow-y-auto py-4 px-2">
           <ul className="space-y-1">
-            <NavItem icon={HomeIcon} label="Tableau de bord" />
-            <NavItem icon={FilesIcon} label="Cas cliniques" />
-            <NavItem icon={UsersIcon} label="Experts" />
-            <NavItem icon={MessageSquareIcon} label="Discussions" />
-            <NavItem icon={BrainCircuitIcon} label="Assistant IA" />
-            <NavItem icon={BarChartIcon} label="Statistiques" />
+            <NavItem icon={HomeIcon} label="Accueil" to="/dashbord" />
+            <NavItem icon={UsersIcon} label="Experts" to="/experts" />
+            <NavItem icon={UsersIcon} label="médecins" to="/medecins" />
+            <NavItem icon={FilesIcon} label="Cas cliniques" to="/cas" />
+            <NavItem icon={MessageSquareIcon} label="Discussions" to="/discussions" />
+            <NavItem icon={BrainCircuitIcon} label="Assistant IA" to="/assistant-ia" />
+            
           </ul>
           <div className="pt-8 mt-8 border-t border-gray-200">
             <ul className="space-y-1">
-              <NavItem icon={SettingsIcon} label="Paramètres" />
-              <NavItem icon={HelpCircleIcon} label="Aide" />
+              <NavItem icon={BarChartIcon} label="Statistiques" to="/stats" />
+              <NavItem icon={SettingsIcon} label="Paramètres" to='/'/>
+              <NavItem icon={HelpCircleIcon} label="Aide et assistance" to='/'/>
             </ul>
           </div>
         </nav>
@@ -67,17 +79,18 @@ export function Sidebar() {
         </div>
         <nav className="flex-1 overflow-y-auto py-4 px-3">
           <ul className="space-y-1">
-            <NavItem icon={HomeIcon} label="Tableau de bord" />
-            <NavItem icon={FilesIcon} label="Cas cliniques" />
-            <NavItem icon={UsersIcon} label="Experts" />
-            <NavItem icon={MessageSquareIcon} label="Discussions" />
-            <NavItem icon={BrainCircuitIcon} label="Assistant IA" />
-            <NavItem icon={BarChartIcon} label="Statistiques" />
+          <NavItem icon={HomeIcon} label="Accueil" to="" />
+            <NavItem icon={UsersIcon} label="Experts" to="/experts" />
+            <NavItem icon={UsersIcon} label="médecins" to="/medecins" />
+            <NavItem icon={FilesIcon} label="Cas cliniques" to="/cas" />
+            <NavItem icon={MessageSquareIcon} label="Discussions" to="/discussions" />
+            <NavItem icon={BrainCircuitIcon} label="Assistant IA" to="/assistant-ia" />
           </ul>
           <div className="pt-8 mt-8 border-t border-gray-200">
             <ul className="space-y-1">
-              <NavItem icon={SettingsIcon} label="Paramètres" />
-              <NavItem icon={HelpCircleIcon} label="Aide" />
+              <NavItem icon={BarChartIcon} label="Statistiques" to="/stats" />
+              <NavItem icon={SettingsIcon} label="Paramètres" to='/'/>
+              <NavItem icon={HelpCircleIcon} label="Aide et assistance" to='/'/>
             </ul>
           </div>
         </nav>

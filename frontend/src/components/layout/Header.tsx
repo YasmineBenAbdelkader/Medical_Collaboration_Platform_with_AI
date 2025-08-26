@@ -1,43 +1,50 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { BellIcon, MessageCircleIcon, SearchIcon, MenuIcon } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-export const Header = () => {
-  const {
-    user
-  } = useAuth();
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-  return <header className="bg-white border-b border-gray-200">
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center md:hidden">
-            <button onClick={() => setShowMobileMenu(!showMobileMenu)} className="text-gray-500 hover:text-gray-700 focus:outline-none">
-              <MenuIcon className="h-6 w-6" />
-            </button>
-          </div>
-          <div className="hidden md:block flex-1">
-            <div className="relative max-w-md">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <SearchIcon className="h-5 w-5 text-teal-600" />
-              </div>
-              <input className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 sm:text-sm" placeholder="Rechercher des cas, experts..." type="search" />
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <button className="text-gray-500 hover:text-teal-700 p-1 rounded-full hover:bg-teal-50">
-              <BellIcon className="h-6 w-6" />
-            </button>
-            <button className="text-gray-500 hover:text-teal-700 p-1 rounded-full hover:bg-teal-50">
-              <MessageCircleIcon className="h-6 w-6" />
-            </button>
-            {user && <Link to={`/profile/${user.id}`} className="flex items-center">
-                <img className="h-8 w-8 rounded-full object-cover border-2 border-teal-600" src={user.avatar} alt={user.name} />
-                <span className="ml-2 text-sm font-medium text-gray-700 hidden md:block">
-                  {user.name}
-                </span>
-              </Link>}
+import React from 'react';
+import { Bell, Search, UserPlus, User } from 'lucide-react';
+
+export function Header() {
+  return (
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <div className="flex items-center justify-between h-16 px-4 md:px-6">
+        {/* Barre de recherche */}
+        <div className="flex items-center flex-1">
+          <div className="relative w-full max-w-md">
+            <input 
+              type="text" 
+              placeholder="Rechercher..." 
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+            />
+            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           </div>
         </div>
+        
+        {/* Actions */}
+        <div className="flex items-center space-x-4">
+          {/* Invitations */}
+          <button className="relative p-2 rounded-full hover:bg-gray-100">
+            <UserPlus className="h-6 w-6 text-gray-600" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-blue-500 rounded-full"></span>
+          </button>
+          
+          {/* Notifications */}
+          <button className="relative p-2 rounded-full hover:bg-gray-100">
+            <Bell className="h-6 w-6 text-gray-600" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          </button>
+          
+          {/* Profil utilisateur */}
+          <a href="/profil" className="flex items-center">
+            <div className="hidden md:flex flex-col items-end mr-3">
+              <span className="text-sm font-medium text-gray-900">
+                Dr. Sophie Martin
+              </span>
+              <span className="text-xs text-gray-500">Cardiologie</span>
+            </div>
+            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <User className="h-6 w-6 text-blue-600" />
+            </div>
+          </a>
+        </div>
       </div>
-    </header>;
-};
+    </header>
+  );
+}
