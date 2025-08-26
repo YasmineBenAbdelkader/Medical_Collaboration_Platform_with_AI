@@ -155,59 +155,42 @@ export const Dashboard = () => {
     <div className="flex max-w-7xl mx-auto">
       {/* Contenu principal */}
       <div className="flex-1 pr-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
-        <div className="flex space-x-3">
-          <button className="flex items-center text-gray-700 bg-white px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50">
-            <FilterIcon size={18} className="mr-2" />
-            Filtres
-          </button>
-          <Link to="/case/new" className="flex items-center text-white bg-teal-600 px-4 py-2 rounded-md hover:bg-teal-700">
-            <PlusCircleIcon size={18} className="mr-2" />
-            Nouveau cas
-          </Link>
-        </div>
-      </div>
-
       {/* En-tête Cardiologie */}
-      <div className="relative mb-6 overflow-hidden rounded-xl border border-teal-600/30 bg-gradient-to-r from-teal-600 to-rose-500">
-        <div className="absolute inset-0 opacity-30">
+      <div className="relative mb-8 overflow-hidden rounded-2xl border border-teal-500/30 bg-gradient-to-r from-teal-600 via-teal-500 to-rose-500 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+         {/* Background SVG avec opacité et légère animation */}
+        <div className="absolute inset-0 opacity-20 animate-pulse-slow">
           <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-            <polyline fill="none" stroke="white" strokeWidth="3" points="0,100 80,100 100,40 120,160 140,100 220,100 240,60 260,140 280,100 360,100 380,30 400,170 420,100 520,100 540,50 560,150 580,100 800,100" />
+            <polyline 
+              fill="none" 
+              stroke="white" 
+              strokeWidth="3" 
+              points="0,100 80,100 100,40 120,160 140,100 220,100 240,60 260,140 280,100 360,100 380,30 400,170 420,100 520,100 540,50 560,150 580,100 800,100" 
+            />
           </svg>
         </div>
-        <div className="relative z-10 p-5 sm:p-6 text-white flex items-center justify-between">
-          <div>
-            <div className="flex items-center mb-1">
-              <HeartPulseIcon size={22} className="mr-2" />
-              <span className="uppercase text-xs tracking-wider opacity-90">Service</span>
+
+        <div className="relative z-10 p-6 sm:p-8 text-white flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+          {/* Texte principal */}
+          <div className="sm:max-w-lg">
+            <div className="flex items-center mb-2">
+              <HeartPulseIcon size={24} className="mr-3 text-white animate-pulse" />
+              <span className="uppercase text-xs tracking-wider font-medium text-white/90">Service</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-semibold">Cardiologie — vue d'ensemble</h2>
-            <p className="text-white/90 text-sm mt-1">Suivi des ECG, urgences cardiaques et collaborations entre spécialistes.</p>
-          </div>
-          <div className="hidden sm:flex items-center space-x-2">
-            <Link to="/case/new" className="inline-flex items-center bg-white/95 text-teal-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-white">
-              <ActivityIcon size={16} className="mr-2" />
-              Analyser un ECG
-            </Link>
-            <button className="inline-flex items-center bg-white/10 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-white/20 border border-white/20">
-              <AlertTriangleIcon size={16} className="mr-2" />
-              Urgence STEMI
-            </button>
+            <h2 className="text-2xl sm:text-3xl font-bold leading-snug mb-2">Cardiologie</h2>
+            <p className="text-white/80 text-sm sm:text-base leading-relaxed">
+              Partagez vos cas, inspirez vos collègues et améliorez les diagnostics.
+            </p>
           </div>
         </div>
       </div>
-        
       <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
         <h2 className="text-lg font-medium text-gray-900 mb-3 mb-2">
           Cardiologie
         </h2>
         <div className="flex flex-wrap gap-2">
           <button className="bg-teal-600/10 text-teal-600 px-3 py-1 rounded-full text-sm font-medium">Tous les cas</button>
-          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">Urgences cardiaques</button>
-          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">ECG à analyser</button>
-          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">Post-angioplastie</button>
-          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">Insuffisance cardiaque</button>
+          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">cas Urgent</button>
+          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">Cas résolus</button>
         </div>
       </div>
 

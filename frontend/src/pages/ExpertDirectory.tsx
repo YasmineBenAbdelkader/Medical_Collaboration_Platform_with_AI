@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Search,
-  Award,
-  MapPin,
-  Clock,
-  Star,
-  MessageCircle,
-  Building,
-} from "lucide-react";
+import { Search, Award, MapPin, Clock, MessageCircle, Building } from "lucide-react";
 
 export const ExpertDirectory = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,8 +17,6 @@ export const ExpertDirectory = () => {
       avatar:
         "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
       responseTime: "< 24h",
-      rating: 4.9,
-      reviewCount: 124,
       isOnline: true,
       verified: true,
       isConnection: true,
@@ -41,8 +31,6 @@ export const ExpertDirectory = () => {
       avatar:
         "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
       responseTime: "< 48h",
-      rating: 4.7,
-      reviewCount: 98,
       isOnline: false,
       verified: true,
       isConnection: false,
@@ -67,12 +55,10 @@ export const ExpertDirectory = () => {
       {/* Header */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-light text-gray-900 mb-3">
-          Annuaire des{" "}
-          <span className="font-semibold text-blue-500">experts</span>
+          Annuaire des <span className="font-semibold text-blue-500">experts</span>
         </h1>
         <p className="text-gray-500 text-lg max-w-xl mx-auto">
-          Trouvez et contactez des experts médicaux qualifiés rapidement et
-          facilement.
+          Trouvez et contactez des experts médicaux qualifiés rapidement et facilement.
         </p>
       </div>
 
@@ -100,8 +86,8 @@ export const ExpertDirectory = () => {
               onClick={() => setActiveFilter(filter.key)}
               className={`px-4 py-1 text-sm rounded-full transition font-medium ${
                 activeFilter === filter.key
-                  ? "bg-blue-50 text-blue-600"
-                  : "bg-white text-gray-500 hover:bg-gray-50"
+                  ? "bg-blue-50 text-blue-600 border border-blue-200"
+                  : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-200"
               }`}
             >
               {filter.label}
@@ -115,7 +101,7 @@ export const ExpertDirectory = () => {
         {filteredExperts.map((expert) => (
           <div
             key={expert.id}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition p-6 flex flex-col justify-between"
+            className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition p-6 flex flex-col justify-between group"
           >
             {/* Top */}
             <div className="flex items-start mb-5">
@@ -123,36 +109,20 @@ export const ExpertDirectory = () => {
                 <img
                   src={expert.avatar}
                   alt={expert.name}
-                  className="w-16 h-16 rounded-full object-cover border border-gray-100"
+                  className="w-16 h-16 rounded-full object-cover border-2 border-gray-100 group-hover:border-blue-400 transition"
                 />
                 {expert.isOnline && (
-                  <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 border border-white rounded-full"></span>
+                  <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 border border-white rounded-full animate-pulse"></span>
                 )}
               </div>
               <div className="ml-4 flex-1">
-                <div className="flex items-center space-x-1">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-500 transition">
                     {expert.name}
                   </h3>
-                  {expert.verified && <Award size={16} className="text-blue-400" />}
+                  {expert.verified && <Award size={18} className="text-blue-400" />}
                 </div>
-                <p className="text-sm text-blue-500 mt-1">{expert.specialty}</p>
-                <div className="flex items-center mt-2 space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={14}
-                      className={`${
-                        i < Math.floor(expert.rating)
-                          ? "text-yellow-400 fill-current"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                  <span className="ml-1 text-xs text-gray-400">
-                    {expert.rating} ({expert.reviewCount})
-                  </span>
-                </div>
+                <p className="text-sm text-blue-500 mt-1 italic">{expert.specialty}</p>
               </div>
             </div>
 
@@ -161,7 +131,7 @@ export const ExpertDirectory = () => {
               {expert.expertise.map((item, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1 text-xs rounded-full bg-gray-50 text-gray-600 border border-gray-200"
+                  className="px-3 py-1 text-xs rounded-full bg-blue-50 text-blue-600 font-medium border border-blue-100"
                 >
                   {item}
                 </span>
@@ -172,7 +142,7 @@ export const ExpertDirectory = () => {
             <div className="text-gray-500 text-sm space-y-2 mb-5">
               <div className="flex items-center space-x-2">
                 <Building size={14} className="text-gray-400" />
-                <span>{expert.hospital}</span>
+                <span className="font-medium">{expert.hospital}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin size={14} className="text-gray-400" />
@@ -180,9 +150,7 @@ export const ExpertDirectory = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Clock size={14} className="text-gray-400" />
-                <span className="text-green-500 font-medium">
-                  {expert.responseTime}
-                </span>
+                <span className="text-green-500 font-semibold">{expert.responseTime}</span>
                 <span className="text-gray-400">de réponse</span>
               </div>
             </div>
@@ -191,13 +159,13 @@ export const ExpertDirectory = () => {
             <div className="flex space-x-2">
               <Link
                 to={`/profile/${expert.id}`}
-                className="flex-1 text-center px-3 py-2 text-sm rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition"
+                className="flex-1 text-center px-3 py-2 text-sm rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-blue-500 transition font-medium"
               >
                 Voir profil
               </Link>
               <Link
                 to={`/contact/${expert.id}`}
-                className="flex-1 flex items-center justify-center px-3 py-2 text-sm rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition"
+                className="flex-1 flex items-center justify-center px-3 py-2 text-sm rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition font-medium"
               >
                 <MessageCircle size={16} className="mr-1" />
                 Avis
@@ -210,7 +178,7 @@ export const ExpertDirectory = () => {
       {filteredExperts.length === 0 && (
         <div className="text-center py-16 text-gray-400">
           <Search size={24} className="mx-auto mb-2" />
-          <p>Aucun expert trouvé</p>
+          <p className="font-medium">Aucun expert trouvé</p>
           <p className="text-sm">Essayez d’ajuster vos critères.</p>
         </div>
       )}
