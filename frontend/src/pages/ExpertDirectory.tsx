@@ -40,7 +40,86 @@ export const ExpertDirectory = () => {
       isOnline: false,
       verified: true,
     },
+    {
+      id: "3",
+      name: "Dr. Clara Lefèvre",
+      specialty: "Pédiatrie",
+      expertise: ["Vaccination", "Maladies infantiles"],
+      location: "Marseille, France",
+      hospital: "Hôpital de la Timone",
+      avatar:
+        "https://images.unsplash.com/photo-1594824476967-48c8b9642738?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
+      reviewCount: 150,
+      isOnline: true,
+      verified: true,
+    },
+    {
+      id: "4",
+      name: "Dr. Antoine Bernard",
+      specialty: "Dermatologie",
+      expertise: ["Dermatoses", "Allergies cutanées"],
+      location: "Toulouse, France",
+      hospital: "Clinique Pasteur",
+      avatar:
+        "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
+      reviewCount: 87,
+      isOnline: false,
+      verified: true,
+    },
+    {
+      id: "5",
+      name: "Dr. Amélie Girard",
+      specialty: "Oncologie",
+      expertise: ["Chimiothérapie", "Cancer du sein"],
+      location: "Bordeaux, France",
+      hospital: "Institut Bergonié",
+      avatar:
+        "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
+      reviewCount: 200,
+      isOnline: true,
+      verified: true,
+    },
+    {
+      id: "6",
+      name: "Dr. Marc Pelletier",
+      specialty: "Orthopédie",
+      expertise: ["Prothèses", "Fractures complexes"],
+      location: "Lille, France",
+      hospital: "CHU de Lille",
+      avatar:
+        "https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
+      reviewCount: 65,
+      isOnline: true,
+      verified: false,
+    },
+    {
+      id: "7",
+      name: "Dr. Élodie Caron",
+      specialty: "Ophtalmologie",
+      expertise: ["Chirurgie réfractive", "Glaucome"],
+      location: "Nice, France",
+      hospital: "Centre Antoine Lacassagne",
+      avatar:
+        "https://images.unsplash.com/photo-1607746882053-6b2c7b6a1dfb?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
+      reviewCount: 112,
+      isOnline: false,
+      verified: true,
+    },
+    {
+      id: "8",
+      name: "Dr. Paul Moreau",
+      specialty: "Psychiatrie",
+      expertise: ["Troubles anxieux", "Dépression"],
+      location: "Strasbourg, France",
+      hospital: "Hôpital Civil de Strasbourg",
+      avatar:
+        "https://images.unsplash.com/photo-1607746882047-bd2c78e4a3b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
+      reviewCount: 75,
+      isOnline: true,
+      verified: true,
+    },
   ];
+  
 
   const filteredExperts = experts.filter((expert) => {
     const matchesSearch =

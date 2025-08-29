@@ -14,17 +14,27 @@ import { Blog } from './pages/Blog';
 import { NewCase } from './pages/NewCase';
 import  Register  from './pages/register';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { MyPubs } from './pages/MyPubs.tsx';
+import { Discussions } from './pages/Discussions.tsx';
+
+// Pages fictives ajoutées pour compléter les routes manquantes
+const Stats = () => <div>Statistiques</div>;
+const Parametres = () => <div>Paramètres</div>;
+const Help = () => <div>Aide et assistance</div>;
 
 export function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Public routes */}
           <Route path="/home" element={<LandingPage />} />
           <Route path="/contactUs" element={<ContactUs />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
+          {/* Protected routes */}
           <Route
             path="/*"
             element={
@@ -36,6 +46,11 @@ export function App() {
                   <Route path="/profile/:id" element={<Profile />} />
                   <Route path="/experts" element={<ExpertDirectory />} />
                   <Route path="/ai-assistant" element={<AIAssistant />} />
+                  <Route path="/pubs" element={<MyPubs />} />
+                  <Route path="/discussions" element={<Discussions />} />
+                  <Route path="/stats" element={<Stats />} />
+                  <Route path="/params" element={<Parametres />} />
+                  <Route path="/help" element={<Help />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </AppLayout>
