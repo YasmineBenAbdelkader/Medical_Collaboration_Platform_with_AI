@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 export const Dashboard = () => {
   const [cases, setCases] = useState<StoredCase[]>([]);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<'all' | 'urgent' | 'resolved'>('all');
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -35,7 +36,7 @@ export const Dashboard = () => {
   const stats = {
     totalCases: cases.length,
     urgentCases: cases.filter(c => c.isUrgent).length,
-    resolvedCases: 142,
+    resolvedCases: cases.filter(c => c.isResolved).length,
     activeExperts: 23
   };
 
@@ -63,238 +64,115 @@ export const Dashboard = () => {
   };
 
   const handleEdit = (id: string) => {
-    // TODO: brancher vers une vraie page d'édition avec pré-remplissage
     navigate(`/case/new?edit=${id}`);
     setOpenMenuId(null);
-  };
-
-  type ConnectionRequest = {
-    id: string;
-    name: string;
-    role: 'Étudiant' | 'Médecin' | 'Expert';
-    specialty?: string;
-    avatar: string;
-    message?: string;
-    since: string;
-  };
-
-  type SentRequest = {
-    id: string;
-    name: string;
-    role: 'Étudiant' | 'Médecin' | 'Expert';
-    specialty?: string;
-    avatar: string;
-    status: 'en_attente' | 'acceptée' | 'refusée';
-    sentAt: string;
-  };
-
-  const [receivedRequests, setReceivedRequests] = useState<ConnectionRequest[]>([
-    {
-      id: 'r1',
-      name: 'Amine El Idrissi',
-      role: 'Étudiant',
-      specialty: '6ème année Médecine',
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=300&auto=format&fit=crop',
-      message: 'Demande de connexion pour suivre vos cas cardiologiques',
-      since: "Il y a 5 min"
-    },
-    {
-      id: 'r2',
-      name: 'Dr. Salma Rahimi',
-      role: 'Médecin',
-      specialty: 'Dermatologie',
-      avatar: 'https://images.unsplash.com/photo-1548898263-2f8a9d5b77f4?q=80&w=300&auto=format&fit=crop',
-      message: 'Souhaite collaborer sur des cas multi-disciplinaires',
-      since: 'Il y a 1 h'
-    }
-  ]);
-
-  const [sentRequests, setSentRequests] = useState<SentRequest[]>([
-    {
-      id: 's1',
-      name: 'Dr. Youssef B.',
-      role: 'Expert',
-      specialty: 'Électrophysiologie',
-      avatar: 'https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=300&auto=format&fit=crop',
-      status: 'en_attente',
-      sentAt: 'Hier'
-    },
-    {
-      id: 's2',
-      name: 'Dr. Nadia K.',
-      role: 'Médecin',
-      specialty: 'Radiologie',
-      avatar: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=300&auto=format&fit=crop',
-      status: 'acceptée',
-      sentAt: 'Il y a 2 j'
-    },
-    {
-      id: 's3',
-      name: 'Omar S.',
-      role: 'Étudiant',
-      specialty: 'Interne',
-      avatar: 'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=300&auto=format&fit=crop',
-      status: 'refusée',
-      sentAt: 'Il y a 3 j'
-    }
-  ]);
-
-  const acceptRequest = (id: string) => {
-    setReceivedRequests(prev => prev.filter(r => r.id !== id));
-  };
-
-  const rejectRequest = (id: string) => {
-    setReceivedRequests(prev => prev.filter(r => r.id !== id));
-  };
-
-  const cancelSentRequest = (id: string) => {
-    setSentRequests(prev => prev.filter(r => r.id !== id));
   };
 
   return (
     <div className="flex max-w-7xl mx-auto">
       {/* Contenu principal */}
       <div className="flex-1 pr-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
-        <div className="flex space-x-3">
-          <button className="flex items-center text-gray-700 bg-white px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50">
-            <FilterIcon size={18} className="mr-2" />
-            Filtres
-          </button>
-          <Link to="/case/new" className="flex items-center text-white bg-teal-600 px-4 py-2 rounded-md hover:bg-teal-700">
-            <PlusCircleIcon size={18} className="mr-2" />
-            Nouveau cas
+        <div className="flex items-center justify-between mb-8">
+          {/* Titre stylisé */}
+          <h1 className="text-3xl font-extrabold flex items-center tracking-tight">
+            <span className="inline-block w-1.5 h-8 bg-[#00A7A7] rounded-full mr-3 shadow-sm"></span>
+            <span className="bg-gradient-to-r from-[#00A7A7] to-teal-800 bg-clip-text text-transparent">
+              Accueil
+            </span>
+          </h1>
+          {/* Bouton Nouveau cas */}
+          <Link 
+            to="/case/new" 
+            className="relative group inline-flex items-center px-5 py-2.5 rounded-xl text-white bg-[#00A7A7] shadow-md hover:shadow-lg transition-all duration-200 hover:bg-[#008f8f]"
+          >
+            <PlusCircleIcon size={20} className="mr-2 transition-transform group-hover:rotate-90" />
+            <span className="font-medium">Nouveau cas</span>
+            <span className="absolute inset-0 rounded-xl ring-2 ring-transparent group-hover:ring-white/30 transition"></span>
           </Link>
         </div>
-      </div>
 
-      {/* En-tête Cardiologie */}
-      <div className="relative mb-6 overflow-hidden rounded-xl border border-teal-600/30 bg-gradient-to-r from-teal-600 to-rose-500">
-        <div className="absolute inset-0 opacity-30">
-          <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-            <polyline fill="none" stroke="white" strokeWidth="3" points="0,100 80,100 100,40 120,160 140,100 220,100 240,60 260,140 280,100 360,100 380,30 400,170 420,100 520,100 540,50 560,150 580,100 800,100" />
-          </svg>
-        </div>
-        <div className="relative z-10 p-5 sm:p-6 text-white flex items-center justify-between">
-          <div>
-            <div className="flex items-center mb-1">
-              <HeartPulseIcon size={22} className="mr-2" />
-              <span className="uppercase text-xs tracking-wider opacity-90">Service</span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-semibold">Cardiologie — vue d'ensemble</h2>
-            <p className="text-white/90 text-sm mt-1">Suivi des ECG, urgences cardiaques et collaborations entre spécialistes.</p>
+        {/* En-tête Cardiologie */}
+        <div className="relative mb-4 overflow-hidden rounded-xl border border-[#00A7A7]/40 bg-gradient-to-r from-[#00A7A7] via-teal-600 to-rose-500 shadow-md">
+          <div className="absolute inset-0 opacity-40">
+            <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+              <polyline 
+                fill="none" 
+                stroke="white" 
+                strokeWidth="3" 
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                strokeDasharray="1000"
+                strokeDashoffset="1000"
+                className="animate-ecg"
+                points="0,100 80,100 100,40 120,160 140,100 220,100 240,60 260,140 280,100 360,100 380,30 400,170 420,100 520,100 540,50 560,150 580,100 800,100" 
+              />
+            </svg>
           </div>
-          <div className="hidden sm:flex items-center space-x-2">
-            <Link to="/case/new" className="inline-flex items-center bg-white/95 text-teal-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-white">
-              <ActivityIcon size={16} className="mr-2" />
-              Analyser un ECG
-            </Link>
-            <button className="inline-flex items-center bg-white/10 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-white/20 border border-white/20">
-              <AlertTriangleIcon size={16} className="mr-2" />
-              Urgence STEMI
+          <div className="relative z-10 p-4 sm:p-5 text-white">
+            <div className="flex items-center gap-2 mb-1">
+              <HeartPulseIcon size={22} className="text-white drop-shadow animate-pulse" />
+              <span className="uppercase text-xs tracking-widest opacity-80">MedCollab</span>
+            </div>
+            <h2 className="text-lg sm:text-xl font-bold tracking-tight drop-shadow">
+              Cardiologie
+            </h2>
+            <p className="text-white/80 text-xs sm:text-sm mt-1 max-w-xl">
+              Partagez vos cas cliniques, demandez l’avis d’experts et utilisez l’IA pour vous accompagner dans vos décisions cardiologiques.
+            </p>
+          </div>
+        </div>
+
+        <style>{`
+          @keyframes ecg {
+            0% { stroke-dashoffset: 1000; filter: drop-shadow(0 0 4px #fff); }
+            50% { filter: drop-shadow(0 0 8px #00ffff); }
+            100% { stroke-dashoffset: -1000; filter: drop-shadow(0 0 4px #fff); }
+          }
+          .animate-ecg { animation: ecg 3s linear infinite; }
+        `}</style>
+
+        {/* Filtres */}
+        <div className="bg-white rounded-xl border border-[#00A7A7]/30 p-4 mb-6 shadow-sm">
+          <h2 className="text-sm font-medium text-gray-500 mb-3 flex items-center">
+            <span className="inline-block w-1.5 h-5 bg-[#00A7A7] rounded-full mr-2"></span>
+            Affinez votre sélection
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => setFilter('all')}
+              className={`px-4 py-2 rounded-full border ${
+                filter === 'all' ? 'border-[#00A7A7] bg-[#00A7A7]/20 text-[#00A7A7]' : 'border-[#00A7A7]/50 bg-[#00A7A7]/10 text-[#00A7A7]'
+              } font-medium text-sm hover:bg-[#00A7A7]/20 hover:scale-105 transition`}
+            >
+              Tous les cas
+            </button>
+            <button
+              onClick={() => setFilter('urgent')}
+              className={`px-4 py-2 rounded-full border ${
+                filter === 'urgent' ? 'border-red-400 bg-red-100 text-red-600' : 'border-red-400/50 bg-red-50 text-red-600'
+              } font-medium text-sm hover:bg-red-100 hover:scale-105 transition`}
+            >
+              Cas urgents
+            </button>
+            <button
+              onClick={() => setFilter('resolved')}
+              className={`px-4 py-2 rounded-full border ${
+                filter === 'resolved' ? 'border-green-400 bg-green-100 text-green-600' : 'border-green-400/50 bg-green-50 text-green-600'
+              } font-medium text-sm hover:bg-green-100 hover:scale-105 transition`}
+            >
+              Cas résolus
             </button>
           </div>
         </div>
-      </div>
-        
-      <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-3 mb-2">
-          Cardiologie
-        </h2>
-        <div className="flex flex-wrap gap-2">
-          <button className="bg-teal-600/10 text-teal-600 px-3 py-1 rounded-full text-sm font-medium">Tous les cas</button>
-          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">Urgences cardiaques</button>
-          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">ECG à analyser</button>
-          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">Post-angioplastie</button>
-          <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-600/10 hover:text-teal-600">Insuffisance cardiaque</button>
-        </div>
-      </div>
 
-
-      {/* Demandes de connexion */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        {/* Reçues */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900 flex items-center">
-              <UserPlusIcon size={20} className="mr-2 text-teal-600" />
-              Demandes de connexion reçues
-            </h3>
-            <span className="text-xs px-2 py-1 rounded-full bg-teal-600/10 text-teal-600">{receivedRequests.length}</span>
-          </div>
-          <div className="space-y-3">
-            {receivedRequests.length === 0 && (
-              <p className="text-sm text-gray-500">Aucune demande en attente.</p>
-            )}
-            {receivedRequests.map(req => (
-              <div key={req.id} className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <img src={req.avatar} alt={req.name} className="w-10 h-10 rounded-full object-cover" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{req.name} <span className="text-xs text-gray-500">• {req.role}</span></p>
-                    <p className="text-xs text-gray-500">{req.specialty}</p>
-                    {req.message && <p className="text-xs text-gray-600 mt-0.5">{req.message}</p>}
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <button onClick={() => acceptRequest(req.id)} className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700">
-                    <CheckIcon size={14} className="mr-1" />
-                    Accepter
-                  </button>
-                  <button onClick={() => rejectRequest(req.id)} className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md text-red-600 bg-red-50 hover:bg-red-100">
-                    <XIcon size={14} className="mr-1" />
-                    Refuser
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Envoyées */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900 flex items-center">
-              <SendIcon size={20} className="mr-2 text-teal-600" />
-              Demandes envoyées
-            </h3>
-            <span className="text-xs px-2 py-1 rounded-full bg-teal-600/10 text-teal-600">{sentRequests.length}</span>
-          </div>
-          <div className="space-y-3">
-            {sentRequests.length === 0 && (
-              <p className="text-sm text-gray-500">Aucune demande envoyée.</p>
-            )}
-            {sentRequests.map(req => (
-              <div key={req.id} className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <img src={req.avatar} alt={req.name} className="w-10 h-10 rounded-full object-cover" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{req.name} <span className="text-xs text-gray-500">• {req.role}</span></p>
-                    <p className="text-xs text-gray-500">{req.specialty}</p>
-                    <p className="text-xs mt-0.5">
-                      <span className={
-                        req.status === 'en_attente' ? 'text-amber-600' : req.status === 'acceptée' ? 'text-green-600' : 'text-red-600'
-                      }>
-                        {req.status === 'en_attente' ? 'En attente' : req.status === 'acceptée' ? 'Acceptée' : 'Refusée'}
-                      </span>
-                      <span className="text-gray-400"> • {req.sentAt}</span>
-                    </p>
-                  </div>
-                </div>
-                {req.status === 'en_attente' && (
-                  <button onClick={() => cancelSentRequest(req.id)} className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200">
-                    Annuler
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-        
-      <div className="space-y-4">
-          {cases.map(c => (
+        {/* Cases */}
+        <div className="space-y-4">
+          {cases.filter(c => {
+            if (filter === 'all') return true;
+            if (filter === 'urgent') return c.isUrgent;
+            if (filter === 'resolved') return c.isResolved;
+            return true;
+          }).map(c => (
             <div key={c.id} className="relative group">
               {user && user.id === c.author.id && (
                 <div className="absolute top-3 right-3">
@@ -338,116 +216,24 @@ export const Dashboard = () => {
                 imageUrl={c.imageUrl}
                 tags={c.tags}
                 isUrgent={c.isUrgent}
+                isResolved={c.isResolved}
               />
             </div>
           ))}
-          {cases.length === 0 && (
+          {cases.filter(c => {
+            if (filter === 'all') return true;
+            if (filter === 'urgent') return c.isUrgent;
+            if (filter === 'resolved') return c.isResolved;
+            return true;
+          }).length === 0 && (
             <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
               <p className="text-gray-600 mb-2">Aucun cas à afficher pour le moment.</p>
-              <Link to="/case/new" className="text-teal-600 hover:text-teal-700 font-medium">Publier un premier cas →</Link>
             </div>
           )}
         </div>
       </div>
 
-      {/* Sidebar droite */}
-      <div className="w-80 flex-shrink-0">
-        <div className="space-y-6">
-          {/* Statistiques */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-              <TrendingUpIcon size={20} className="mr-2 text-teal-600" />
-              Statistiques
-            </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Total des cas</span>
-                <span className="font-semibold text-gray-900">{stats.totalCases}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Cas urgents</span>
-                <span className="font-semibold text-red-600">{stats.urgentCases}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Cas résolus</span>
-                <span className="font-semibold text-green-600">{stats.resolvedCases}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Experts actifs</span>
-                <span className="font-semibold text-teal-600">{stats.activeExperts}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Activité récente */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-              <ClockIcon size={20} className="mr-2 text-teal-600" />
-              Activité récente
-            </h3>
-            <div className="space-y-3">
-              {recentActivity.map(activity => (
-                <div key={activity.id} className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-teal-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-700">{activity.text}</p>
-                    <p className="text-xs text-gray-500 mt-1">Il y a {activity.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Experts en ligne */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-              <UsersIcon size={20} className="mr-2 text-teal-600" />
-              Experts en ligne
-            </h3>
-            <div className="space-y-3">
-              {onlineExperts.map(expert => (
-                <div key={expert.id} className="flex items-center space-x-3">
-                  <div className="relative">
-                    <img 
-                      src={expert.avatar} 
-                      alt={expert.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{expert.name}</p>
-                    <p className="text-xs text-gray-500">{expert.specialty}</p>
-                  </div>
-                  <button className="text-teal-600 hover:text-teal-700">
-                    <MessageCircleIcon size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <button className="w-full mt-3 text-sm text-teal-600 hover:text-teal-700 font-medium">
-              Voir tous les experts
-            </button>
-          </div>
-
-          {/* Conseils IA */}
-          <div className="bg-white rounded-lg border border-teal-600/30 p-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-              <StarIcon size={20} className="mr-2 text-teal-600" />
-              Conseil IA
-            </h3>
-            <p className="text-sm text-gray-700 mb-3">
-              Vous avez 3 cas cardiologiques en attente. L'assistant IA peut vous aider à analyser les ECG et suggérer des diagnostics.
-            </p>
-            <Link 
-              to="/ai-assistant" 
-              className="inline-flex items-center text-sm font-medium text-teal-600 hover:text-teal-700"
-            >
-              Utiliser l'assistant IA →
-            </Link>
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 };
