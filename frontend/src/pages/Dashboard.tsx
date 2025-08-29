@@ -232,8 +232,78 @@ export const Dashboard = () => {
           )}
         </div>
       </div>
+      {/* Sidebar droite  */}
+      <div className="w-80 flex-shrink-0 space-y-6">
+        {/* Activité récente */}
+        <div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-lg">
+          <h3 className="text-lg font-semibold text-gray-800 mb-5 flex items-center gap-2">
+            <ClockIcon size={20} className="text-teal-500" />
+            Activité récente
+          </h3>
+          <div className="space-y-4">
+            {recentActivity.map(activity => (
+              <div key={activity.id} className="flex items-start gap-3">
+                <div className="w-2.5 h-2.5 bg-teal-400 rounded-full mt-1 animate-pulse"></div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-700">{activity.text}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{activity.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-      
+        {/* Experts en ligne */}
+        <div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-lg">
+          <h3 className="text-lg font-semibold text-gray-800 mb-5 flex items-center gap-2">
+            <UsersIcon size={20} className="text-teal-500" />
+            Experts en ligne
+          </h3>
+          <div className="space-y-4">
+            {onlineExperts.map(expert => (
+              <div key={expert.id} className="flex items-center gap-4 hover:bg-gray-50 rounded-xl p-2 transition">
+                <div className="relative flex-shrink-0">
+                  <img 
+                    src={expert.avatar} 
+                    alt={expert.name} 
+                    className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+                  />
+                  <span className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border border-white rounded-full"></span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-800">{expert.name}</p>
+                  <p className="text-xs text-gray-500">{expert.specialty}</p>
+                </div>
+                <button className="text-teal-500 hover:text-teal-600 transition">
+                  <MessageCircleIcon size={18} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <button className="w-full mt-4 py-2 text-sm text-teal-600 font-medium rounded-xl bg-teal-50 hover:bg-teal-100 transition">
+            Voir tous les experts
+          </button>
+        </div>
+
+        {/* Conseils IA */}
+        <div className="bg-white rounded-3xl border border-teal-200 p-6 shadow-lg">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+            <StarIcon size={20} className="text-teal-500" />
+            Conseil IA
+          </h3>
+          <p className="text-sm text-gray-700 mb-4">
+            Vous avez 3 cas cardiologiques en attente. L'assistant IA peut vous aider à analyser les ECG et suggérer des diagnostics.
+          </p>
+          <Link 
+            to="/ai-assistant" 
+            className="inline-flex items-center gap-1 text-sm font-medium text-teal-700 hover:text-teal-800 transition"
+          >
+            Utiliser l'IA →
+          </Link>
+        </div>
+      </div>
+
+
     </div>
   );
 };

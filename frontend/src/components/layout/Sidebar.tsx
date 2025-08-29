@@ -26,38 +26,38 @@ export function Sidebar() {
     <li>
       <Link
         to={to}
-        className={`flex items-center p-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all ${
+        className={`flex items-center p-3 rounded-lg transition-all text-gray-700 hover:bg-[#00A7A7]/10 hover:text-[#00A7A7] ${
           collapsed ? "justify-center" : ""
         }`}
       >
         <Icon className="h-5 w-5" />
-        {!collapsed && <span className="ml-3">{label}</span>}
+        {!collapsed && <span className="ml-3 font-medium">{label}</span>}
       </Link>
     </li>
   );
 
   return (
     <>
-      {/* Mobile sidebar toggle */}
+      {/* Mobile toggle button */}
       <button 
-        className="fixed z-50 bottom-4 right-4 p-2 rounded-full bg-blue-600 text-white shadow-lg md:hidden" 
+        className="fixed z-50 bottom-4 right-4 p-2 rounded-full bg-[#00A7A7] text-white shadow-lg md:hidden" 
         onClick={toggleMobileSidebar}
       >
         {mobileOpen ? <XIcon /> : <MenuIcon />}
       </button>
 
-      {/* Sidebar for desktop */}
-      <aside className={`hidden md:flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'}`}>
-        <div className={`flex items-center h-16 px-4 border-b border-gray-200 ${collapsed ? 'justify-center' : 'justify-between'}`}>
+      {/* Desktop sidebar */}
+      <aside className={`hidden md:flex flex-col bg-white border-r border-gray-100 shadow-sm transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'}`}>
+        <div className={`flex items-center h-16 px-4 border-b border-gray-100 ${collapsed ? 'justify-center' : 'justify-between'}`}>
           {!collapsed && (
             <div className="flex items-center">
-              <BrainCircuitIcon className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-lg font-semibold text-gray-900">
+              <BrainCircuitIcon className="h-8 w-8 text-[#00A7A7]" />
+              <span className="ml-2 text-lg font-semibold text-[#00A7A7]">
                 MedCollab
               </span>
             </div>
           )}
-          <button onClick={toggleSidebar} className="p-1 rounded-md hover:bg-gray-100">
+          <button onClick={toggleSidebar} className="p-1 rounded-md hover:bg-gray-100 transition">
             <MenuIcon className="h-5 w-5 text-gray-500" />
           </button>
         </div>
@@ -71,7 +71,7 @@ export function Sidebar() {
             <NavItem icon={BrainCircuitIcon} label="Assistant IA" to="/ai-assistant" />
           </ul>
 
-          <div className="pt-8 mt-8 border-t border-gray-200">
+          <div className="pt-8 mt-8 border-t border-gray-100">
             <ul className="space-y-1">
               <NavItem icon={BarChartIcon} label="Statistiques" to="/stats" />
               <NavItem icon={SettingsIcon} label="Paramètres" to="/params"/>
@@ -83,10 +83,10 @@ export function Sidebar() {
 
       {/* Mobile sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transform ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out md:hidden`}>
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
           <div className="flex items-center">
-            <BrainCircuitIcon className="h-8 w-8 text-blue-600" />
-            <span className="ml-2 text-lg font-semibold text-gray-900">
+            <BrainCircuitIcon className="h-8 w-8 text-[#00A7A7]" />
+            <span className="ml-2 text-lg font-semibold text-[#00A7A7]">
               MedCollab
             </span>
           </div>
@@ -103,7 +103,7 @@ export function Sidebar() {
             <NavItem icon={MessageSquareIcon} label="Discussions" to="/discussions" />
             <NavItem icon={BrainCircuitIcon} label="Assistant IA" to="/ai-assistant" />
           </ul>
-          <div className="pt-8 mt-8 border-t border-gray-200">
+          <div className="pt-8 mt-8 border-t border-gray-100">
             <ul className="space-y-1">
               <NavItem icon={BarChartIcon} label="Statistiques" to="/stats" />
               <NavItem icon={SettingsIcon} label="Paramètres" to="/params"/>
@@ -113,10 +113,10 @@ export function Sidebar() {
         </nav>
       </aside>
 
-      {/* Backdrop for mobile */}
+      {/* Backdrop mobile */}
       {mobileOpen && (
         <div 
-          className="fixed inset-0 bg-gray-600 bg-opacity-50 z-30 md:hidden" 
+          className="fixed inset-0 bg-gray-600 bg-opacity-30 z-30 md:hidden" 
           onClick={toggleMobileSidebar} 
         />
       )}
