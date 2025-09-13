@@ -1,27 +1,62 @@
-from fastapi import FastAPI                    # Import de FastAPI pour créer l'application
-from fastapi.middleware.cors import CORSMiddleware  # Middleware pour gérer le CORS (Cross-Origin Resource Sharing)
-from app.routers import users                      # Import du routeur users défini dans routers/users.py
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from motor.motor_asyncio import AsyncIOMotorClient
+from beanie import init_beanie
+from contextlib import asynccontextmanager
 
-app = FastAPI()                               # Création d'une instance de l'application FastAPI
+from app.config.config import settings
+from app.models.users import User
+from app.routers import users
+from app.utils.security import get_hashed_password
 
-#pour reactTS
-origins = [
-    "http://localhost:3000",
-]
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Connexion asynchrone à MongoDB
+    app.state.client = AsyncIOMotorClient(
+        settings.MONGO_HOST,
+        settings.MONGO_PORT,
+        username=settings.MONGO_USER,
+        password=settings.MONGO_PASSWORD
+    )
 
-# Ajout du middleware CORS à l'application FastAPI
+    # Initialisation de Beanie avec le modèle User
+    await init_beanie(
+        database=app.state.client[settings.MONGO_DB],
+        document_models=[User]
+    )
+
+    # Création du super utilisateur si inexistant
+    user = await User.find_one({"email": settings.FIRST_SUPERUSER})
+    if not user:
+        user = User(
+            name="Super",
+            lastName="Admin",
+            email=settings.FIRST_SUPERUSER,
+            hashed_password=get_hashed_password(settings.FIRST_SUPERUSER_PASSWORD),
+            is_superuser=True
+        )
+        await user.insert()
+        print(f"✅ Superuser {settings.FIRST_SUPERUSER} créé")
+
+    print(f"✅ Connected to MongoDB database: {settings.MONGO_DB}")
+    yield  # point où l'app est opérationnelle
+
+# Création de l'application FastAPI avec lifespan
+app = FastAPI(lifespan=lifespan)
+
+# CORS
+origins = ["http://localhost:3000"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,       # Origines autorisées à faire des requêtes cross-origin
-    allow_credentials=True,      # Autorise l'envoi des cookies et autres credentials dans la requête
-    allow_methods=["*"],         # Autorise toutes les méthodes HTTP (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],         # Autorise tous les headers HTTP dans les requêtes
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Route racine pour tester que l'API fonctionne
-@app.get("/")
-def read_root():
-    return {"message": "API is running!"}
-
-# Inclusion du routeur users dans l'application principale FastAPI
+# Routes
 app.include_router(users.router)
+
+@app.get("/")
+async def read_root():
+    return {"message": "API is running!"}

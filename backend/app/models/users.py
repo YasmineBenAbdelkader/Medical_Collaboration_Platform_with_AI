@@ -1,17 +1,21 @@
-from typing import Annotated
-from uuid import UUID, uuid4
-
-from beanie import Document, Indexed
-from pydantic import EmailStr, Field
-
+from beanie import Document, PydanticObjectId
+from pydantic import BaseModel, EmailStr
 
 class User(Document):
-    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)]
-    email: Annotated[EmailStr, Indexed(unique=True)]
-    first_name: str | None = None
-    last_name: str | None = None
-    hashed_password: str | None = None
-    provider: str | None = None
-    picture: str | None = None
-    is_active: bool = True
+    name: str
+    lastName: str
+    email: EmailStr
+    hashed_password: str
     is_superuser: bool = False
+
+    class Settings:
+        name = "users"  # Nom de la collection MongoDB
+
+    def serialize(self):
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "lastName": self.lastName,
+            "email": self.email,
+            "is_superuser": self.is_superuser,
+        }
