@@ -3,5 +3,7 @@ from typing import Optional
 
 
 class ProfessionalInstitution(BaseModel):
-    id: Optional[str]
-    pro_inst_name: str
+    id: Optional[str] = None
+    name: str
+    city: Optional[str]
+    country: Optional[str]

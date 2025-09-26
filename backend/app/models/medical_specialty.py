@@ -3,6 +3,6 @@ from typing import Optional
 
 
 class MedicalSpecialty(BaseModel):
-    id: Optional[str]
-    med_spec_name: str
+    id: Optional[str] = None
+    name: str
     description: Optional[str]
