@@ -8,3 +8,4 @@ class ProfessionalInstitutionCreate(BaseModel):
 
 class ProfessionalInstitutionRead(ProfessionalInstitutionCreate):
     id: Optional[str] = None
+

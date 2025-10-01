@@ -7,3 +7,4 @@ class MedicalSpecialtyCreate(BaseModel):
 
 class MedicalSpecialtyRead(MedicalSpecialtyCreate):
     id: Optional[str] = None
+

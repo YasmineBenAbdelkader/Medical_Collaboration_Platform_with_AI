@@ -81,7 +81,7 @@ const facilityOptions = [
 
 // Composant Select amélioré
 const CustomSelect = ({ id, label, value, onChange, options, multiple = false, required = false, icon = null }) => {
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (multiple) {
       const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
       onChange({ target: { id, value: selectedOptions } });
@@ -151,6 +151,7 @@ const UploadField = ({ id, label, file, onChange, required = false }) => (
     </label>
   </div>
 );
+
 
 const Register = () => {
   const [userType, setUserType] = useState<UserType>(null);
@@ -313,7 +314,7 @@ const Register = () => {
                 type="password"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                required
+                required={true}
                 size="lg"
               />
             </div>
@@ -360,7 +361,7 @@ const Register = () => {
                   label="Téléverser votre lettre" 
                   file={formData.letterFile} 
                   onChange={handleInputChange} 
-                  required 
+                  required={true} 
                 />
               </div>
             </>
@@ -395,7 +396,7 @@ const Register = () => {
                   label="Téléverser votre diplôme ou attestation" 
                   file={formData.diplomaFile} 
                   onChange={handleInputChange} 
-                  required 
+                  required={true}
                 />
               </div>
             </>
@@ -411,7 +412,7 @@ const Register = () => {
                 label="Numéro RPPS" 
                 value={formData.rppsNumber} 
                 onChange={handleInputChange} 
-                required 
+                required={true} 
                 size="lg" 
               />
               <CustomSelect
@@ -420,7 +421,6 @@ const Register = () => {
                 value={formData.facilities}
                 onChange={handleInputChange}
                 options={facilityOptions}
-                multiple={true}
                 required={true}
                 icon={<BriefcaseIcon className="w-5 h-5 text-gray-500" />}
               />
@@ -429,6 +429,7 @@ const Register = () => {
                 label="Années d'expérience" 
                 value={formData.experience} 
                 onChange={handleInputChange} 
+                required={true}
                 type="number" 
                 size="lg" 
                 icon={<CalendarIcon className="w-5 h-5 text-gray-500" />}
@@ -443,7 +444,7 @@ const Register = () => {
                   label="Téléverser votre carte professionnelle" 
                   file={formData.professionalCard} 
                   onChange={handleInputChange} 
-                  required 
+                  required={true} 
                 />
               </div>
               {userType === "expert" && (
@@ -457,7 +458,7 @@ const Register = () => {
                     label="Téléverser votre CV" 
                     file={formData.cvFile} 
                     onChange={handleInputChange} 
-                    required 
+                    required={true} 
                   />
                 </div>
               )}
@@ -525,6 +526,7 @@ const Register = () => {
                       label="Téléverser une photo" 
                       file={formData.profileImage} 
                       onChange={handleInputChange} 
+                      required={true}
                     />
                   </div>
                   <div>
@@ -534,6 +536,7 @@ const Register = () => {
                       label="Téléverser une bannière" 
                       file={formData.bannerImage} 
                       onChange={handleInputChange} 
+                      required={true}
                     />
                   </div>
                 </div>
@@ -606,6 +609,7 @@ const Register = () => {
                         id={`certificate-${idx}`} 
                         label="Téléverser un document justificatif" 
                         file={exp.certificate} 
+                        required={true}
                         onChange={(e: any) => handleExperienceChange(idx, "certificate", e.target.files?.[0])} 
                       />
                     </div>
@@ -686,6 +690,7 @@ const Register = () => {
                     label="Téléverser une photo" 
                     file={formData.profileImage} 
                     onChange={handleInputChange} 
+                    required={true}
                   />
                 </div>
                 <div>
@@ -694,7 +699,8 @@ const Register = () => {
                     id="bannerImage" 
                     label="Téléverser une bannière" 
                     file={formData.bannerImage} 
-                    onChange={handleInputChange} 
+                    onChange={handleInputChange}
+                    required={true} 
                   />
                 </div>
               </div>
@@ -767,6 +773,7 @@ const Register = () => {
                       id={`certificate-${idx}`} 
                       label="Téléverser un document justificatif" 
                       file={exp.certificate} 
+                      required={true}
                       onChange={(e: any) => handleExperienceChange(idx, "certificate", e.target.files?.[0])} 
                     />
                   </div>
@@ -833,52 +840,42 @@ const Register = () => {
   };
 
   const renderUserTypeSelection = () => (
-    <div className="w-full max-w-5xl mx-auto text-center">
-      <h1 className="text-4xl md:text-5xl font-light text-teal-700 mb-14">Créer un compte</h1>
-      <p className="text-lg text-gray-600 mb-12">Sélectionnez votre profil pour commencer l'inscription</p>
+    <div className="w-full max-w-4xl mx-auto text-center">
+      <h1 className="text-5xl font-light text-teal-700 mb-2 tracking-wide">
+        Créer un compte
+      </h1>
+      <div className="w-24 h-1 mx-auto bg-gradient-to-r from-teal-400 to-teal-600 rounded-full mb-6"></div>
+      <p className="text-lg text-gray-500 mb-12">
+        Sélectionnez votre profil pour commencer l'inscription
+      </p>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {[
-          { 
-            id: "medecin", 
-            title: "Médecin", 
-            description: "Inscription réservée aux praticiens toutes spécialités", 
-            icon: <StethoscopeIcon className="h-10 w-10 text-teal-600" />, 
-            bg: "bg-gradient-to-br from-teal-50 to-teal-100 hover:from-teal-100 hover:to-teal-200 border-teal-200",
-            border: "border-teal-200"
-          },
-          { 
-            id: "etudiant", 
-            title: "Étudiant", 
-            description: "Pour les étudiants en médecine inscrits à l'université", 
-            icon: <GraduationCapIcon className="h-10 w-10 text-blue-600" />, 
-            bg: "bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-blue-200",
-            border: "border-blue-200"
-          },
-          { 
-            id: "expert", 
-            title: "Expert", 
-            description: "Pour les médecins reconnus comme experts médicaux certifiés", 
-            icon: <AwardIcon className="h-10 w-10 text-amber-600" />, 
-            bg: "bg-gradient-to-br from-amber-50 to-amber-100 hover:from-amber-100 hover:to-amber-200 border-amber-200",
-            border: "border-amber-200"
-          },
-        ].map((card) => (
-          <div 
-            key={card.id} 
-            onClick={() => setUserType(card.id as UserType)} 
-            className={`${card.bg} ${card.border} p-8 rounded-2xl shadow-lg border cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl flex flex-col items-center`}
+          { id: "medecin", title: "Médecin", description: "Pour les praticiens toutes spécialités", icon: <StethoscopeIcon className="w-8 h-8 text-white" />, color: "from-teal-500 to-teal-700" },
+          { id: "etudiant", title: "Étudiant", description: "Pour les étudiants en médecine inscrits à l'université", icon: <GraduationCapIcon className="w-8 h-8 text-white" />, color: "from-blue-500 to-blue-700" },
+          { id: "expert", title: "Expert", description: "Médecins reconnus comme experts médicaux certifiés", icon: <AwardIcon className="w-8 h-8 text-white" />, color: "from-amber-500 to-amber-700" },
+        ].map(card => (
+          <div
+            key={card.id}
+            onClick={() => setUserType(card.id as UserType)}
+            className={`cursor-pointer rounded-2xl p-6 flex flex-col items-center text-center transform transition-all duration-300 bg-white/50 backdrop-blur-md border border-gray-200 shadow-lg hover:scale-105 hover:shadow-2xl`}
           >
-            <div className="bg-white p-5 rounded-full w-20 h-20 flex items-center justify-center mb-6 shadow-sm">{card.icon}</div>
-            <h3 className="text-2xl font-semibold text-gray-800 mb-3">{card.title}</h3>
-            <p className="text-gray-600 text-sm leading-relaxed flex-grow">{card.description}</p>
-            <div className="mt-6 text-teal-600 font-medium flex items-center">
-              Commencer <ChevronRightIcon className="w-4 h-4 ml-1" />
+            <div className={`mb-4 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br ${card.color} shadow-lg`}>
+              {card.icon}
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">{card.title}</h3>
+            <p className="text-gray-600 text-sm mb-4">{card.description}</p>
+            <div className="mt-auto text-teal-700 font-medium flex items-center text-sm transition-colors duration-200 hover:text-teal-900">
+              Commencer <ChevronRightIcon className="w-3 h-3 ml-1" />
             </div>
           </div>
         ))}
       </div>
     </div>
   );
+  
+  
+  
 
   return (
     <BackgroundAnimation>
