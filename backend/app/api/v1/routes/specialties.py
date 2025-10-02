@@ -1,17 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from motor.motor_asyncio import AsyncIOMotorDatabase  # ← CET IMPORT MANQUANT ! Ajoute-le ici
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import List
-from datetime import datetime  # Si utilisé dans CRUD (optionnel)
 
-from app.db.mongo import get_db  # Chemin ajusté si besoin (absolu pour simplicité)
+from app.db.mongo import get_db
 from app.schemas.medical_specialty import (
     MedicalSpecialtyListResponse,
     MedicalSpecialtyCreate,
 )
 from app.crud.medical_specialty import upsert_specialty, list_specialties
-from app.services.nuccAPI import fetch_nucc_specialties  # Ou ton service
+from app.services.nuccAPI import fetch_nucc_specialties
 
-router = APIRouter()
+router = APIRouter(prefix="/specialties", tags=["Specialties"])  # Ajout prefix pour cohérence
 
 @router.get("/", response_model=MedicalSpecialtyListResponse)
 async def get_all_specialties(db: AsyncIOMotorDatabase = Depends(get_db)):
@@ -24,9 +23,9 @@ async def get_all_specialties(db: AsyncIOMotorDatabase = Depends(get_db)):
 
 @router.post("/import/nucc", response_model=MedicalSpecialtyListResponse)
 async def import_from_nucc(
-    db: AsyncIOMotorDatabase = Depends(get_db)  # ← Ici, le type est maintenant défini
+    db: AsyncIOMotorDatabase = Depends(get_db)
 ):
-    print("🚀 Début import NUCC")  # Log optionnel
+    print("🚀 Début import NUCC")
     try:
         items = await fetch_nucc_specialties()
         print(f"📦 Items reçus: {len(items)}")
