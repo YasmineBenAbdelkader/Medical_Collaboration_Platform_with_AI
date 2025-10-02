@@ -11,6 +11,8 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   readOnly?: boolean;
   showPasswordToggle?: boolean; // Ajouté
+  size?: "sm" | "lg"; // Ajouté
+  className?: string; // Ajouté
 }
 export const FormInput = ({
   id,
@@ -23,6 +25,8 @@ export const FormInput = ({
   onChange,
   readOnly = false,
   showPasswordToggle = true, // Ajouté
+  size,
+  className,
   ...rest
 }: FormInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +34,9 @@ export const FormInput = ({
     setShowPassword(!showPassword);
   };
   const inputType = type === 'password' ? showPassword ? 'text' : 'password' : type;
-  return <div className="mb-4">
+  const sizeClasses = size === 'lg' ? 'px-4 py-3 text-base' : 'px-3 py-2 text-sm';
+  
+  return <div className={`mb-4 ${className || ''}`}>
       <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
@@ -40,7 +46,7 @@ export const FormInput = ({
             {icon}
           </div>
         )}
-        <input id={id} type={inputType} className={`w-full px-4 py-2 ${icon && type !== 'password' ? 'pl-10' : ''} bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00A7A7] focus:border-transparent outline-none text-gray-800 placeholder-gray-400 transition-all duration-300 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`} placeholder={placeholder} value={value} onChange={onChange} required={required} readOnly={readOnly} {...rest} />
+        <input id={id} type={inputType} className={`w-full ${sizeClasses} ${icon && type !== 'password' ? 'pl-10' : ''} bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00A7A7] focus:border-transparent outline-none text-gray-800 placeholder-gray-400 transition-all duration-300 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`} placeholder={placeholder} value={value} onChange={onChange} required={required} readOnly={readOnly} {...rest} />
         {type === 'password' && showPasswordToggle && (
           <button type="button" onClick={togglePasswordVisibility} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none">
             {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}

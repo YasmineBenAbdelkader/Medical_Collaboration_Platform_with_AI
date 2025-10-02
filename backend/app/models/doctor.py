@@ -1,8 +1,10 @@
-from typing import Optional
-from .user import User
+from .user import UserBase, UserRole
 
-class Doctor(User):
-    rpps_number: str
-    years_of_experience: Optional[int] = None
-    diploma: Optional[str] = None
-    professional_card: Optional[str] = None
+
+class Doctor(UserBase):
+    professional_number: str
+    professional_card: str
+    year_of_experience: str
+    curriculum_vitae: str
+    diploma: str
+    role: UserRole = UserRole.doctor  # auto défini

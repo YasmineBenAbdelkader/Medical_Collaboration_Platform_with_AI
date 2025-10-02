@@ -1,28 +1,68 @@
-from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
-from .base import PyObjectId
+from enum import Enum
+from bson import ObjectId
+from typing import List
 
-class Address(BaseModel):
-    country: str
-    city: str
+from .educational_institution import EducationalInstitution
+from .professional_institution import ProfessionalInstitution
+from .medical_specialty import MedicalSpecialty
 
-class User(BaseModel):
-    id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
+class ProfessionalExperience(BaseModel):
+    title: str
+    institution: ProfessionalInstitution
+    date: str
+    description: str
+    skills: str
+    certificate: str
+
+class socialExperience(BaseModel):
+    title: str
+    association:str
+    date: str
+    description: str
+    skills: str
+    certificate: str
+class UserRole(str, Enum):
+    admin = "admin"
+    student = "student"
+    doctor = "doctor"
+    expert = "expert"
+
+
+
+
+
+class UserBase(BaseModel):
+    id: str = Field(default=None, alias="_id")
     first_name: str
     family_name: str
-    phone_number: Optional[str] = None
-    profile_image: Optional[str] = None
-    banner_image: Optional[str] = None
-    profile_title: Optional[str] = None
-    address: Optional[Address] = None
-    educational_institution_id: Optional[str] = None
-    professional_institution_id: Optional[str] = None
-    medical_specialty_id: Optional[str] = None
+    phone_number: str
+    adress:str
+    sexe:str
+    birth_date:str
+    profile_image: str
+    banner_image: str
+    profile_title: str
+    profile_description:str
+
+    # Champs obligatoires
+    educational_institution: EducationalInstitution = Field(...)
+    professional_institution: ProfessionalInstitution = Field(...)
+    medical_specialty: MedicalSpecialty = Field(...)
+
     email_address: EmailStr
     password: str
-    role: str  # 'student', 'doctor', 'expert'
 
+    professional_experience: List[ProfessionalExperience] = []
+    socialExperience: List[socialExperience] = []
+    certificates: List[str] = []
+
+    acceptTerms: bool
+    acceptPrivacy: bool
+    
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
-        json_encoders = {PyObjectId: str}
+        json_encoders = {
+            ObjectId: str
+        }

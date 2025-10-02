@@ -1,6 +1,8 @@
-from typing import Optional
-from .user import User
+from .user import UserBase, UserRole
 
-class Student(User):
-    subscription_number: str
-    certificate_of_enrollment: Optional[str] = None
+
+class Student(UserBase):
+    certificate_of_university_enrollment: str
+    certificate_of_professional_enrollment: str
+
+    role: UserRole = UserRole.student  # auto défini
