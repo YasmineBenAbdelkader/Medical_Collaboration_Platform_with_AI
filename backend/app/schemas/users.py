@@ -7,9 +7,13 @@ class UserCreate(BaseModel):
     first_name: str
     family_name: str
     phone_number: str
+    adress:str
+    sexe:str
+    birth_date:str
     profile_image: str
+    banner_image: str
     profile_title: str
-    address: str
+    profile_description:str
     educational_institution_id: str
     professional_institution_id: str
     medical_specialty_id: str
@@ -29,3 +33,25 @@ class UserCreate(BaseModel):
 class UserRead(UserCreate):
     id: str
     role: str
+    first_name: str
+    family_name: str
+    phone_number: str
+    adress:str
+    sexe:str
+    birth_date:str
+    profile_image: str
+    banner_image: str
+    profile_title: str
+    profile_description:str
+
+    # Champs obligatoires
+    educational_institution:str
+    professional_institution: str
+    medical_specialty: str
+
+    email_address: EmailStr
+    password: str
+
+    professional_experience: List[str] = []
+    socialExperience: List[str] = []
+    certificates: List[str] = []
