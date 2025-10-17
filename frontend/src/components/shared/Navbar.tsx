@@ -21,10 +21,10 @@ export const Navbar = ({
   onAboutClick,
   onServicesClick,
   onWhyUsClick,
-  logoSrc = '/vite.svg',
-  brandTitle = 'MedCollabIA',
+  logoSrc = '/Medico.png',
+  brandTitle ,
   brandSubtitle,
-  useBrainIcon = true
+  useBrainIcon = false
 }: NavbarProps) => {
   const navigate = useNavigate();
 
@@ -33,12 +33,7 @@ export const Navbar = ({
   const activeLinkClass = isTeal ? 'text-white' : 'text-teal-600';
 
   // 🎨 Gestion des couleurs du logo
-  const iconBgClass = isTeal
-    ? 'bg-white'
-    : 'bg-gradient-to-br from-[#00A7A7] to-[#19c2c2]';
-  const iconColorClass = isTeal
-    ? 'text-teal-600'
-    : 'text-white';
+ 
 
   // fonction pour naviguer et scroller en haut
   const navigateTop = (path: string) => {
@@ -51,9 +46,9 @@ export const Navbar = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <div className={`h-10 w-10 rounded-xl ${iconBgClass} p-1 shadow flex items-center justify-center`}>
+            <div className={`h-12 w-12 rounded-xl  p-1 shadow flex items-center justify-center`}>
               {useBrainIcon ? (
-                <BrainCircuit className={`h-6 w-6 ${iconColorClass}`} />
+                <BrainCircuit className={`h-8 w-8`} />
               ) : (
                 <img src={logoSrc} alt="Logo" className="h-full w-full object-contain rounded-lg" />
               )}

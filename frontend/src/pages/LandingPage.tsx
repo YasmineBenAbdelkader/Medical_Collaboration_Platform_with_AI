@@ -142,11 +142,11 @@ export const LandingPage = () => {
       <div ref={topBarRef} className="bg-[#00A7A7] text-white text-sm shadow-lg">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <a href="mailto:contact@medcollabia.com" className="flex items-center gap-2 hover:text-gray-200 transition-colors duration-300">
+            <a href="mailto:Medico@gmail.com" className="flex items-center gap-2 hover:text-gray-200 transition-colors duration-300">
               <Mail className="h-5 w-5" />
-              <span>contact@Se77ati.com</span>
+              <span>Medico@gmail.com</span>
             </a>
-            <a href="tel:+33123456789" className="flex items-center gap-2 hover:text-gray-200 transition-colors duration-300">
+            <a href="tel:+2016 77 777 777" className="flex items-center gap-2 hover:text-gray-200 transition-colors duration-300">
               <Phone className="h-5 w-5" />
               <span>+216 77 777 777</span>
             </a>
@@ -173,8 +173,7 @@ export const LandingPage = () => {
         onAboutClick={() => scrollToSection(aboutRef, 'about')}
         onServicesClick={() => scrollToSection(servicesRef, 'services')}
         onWhyUsClick={() => scrollToSection(whyUsRef, 'whyUs')}
-        logoSrc="/vite.svg"
-        brandTitle="MedCollab"
+        logoSrc="Medico.png"
         brandSubtitle="Collaboration médicale"
       />
 

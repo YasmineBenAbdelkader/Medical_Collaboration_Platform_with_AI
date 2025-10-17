@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   StethoscopeIcon,
-  GraduationCapIcon,
   AwardIcon,
   ArrowLeftIcon,
   ChevronRightIcon,
@@ -22,7 +21,7 @@ import { FormInput } from "../components/ui/FormInput";
 import { Stepper } from "../components/ui/Stepper";
 
 // Types
-type UserType = "medecin" | "etudiant" | "expert" | null;
+type UserType = "medecin" | "expert" | null;
 
 // Options pour les listes déroulantes
 const educationOptions = [
@@ -194,7 +193,6 @@ const Register = () => {
     confirmPassword: "",
     rppsNumber: "",
     professionalId: "",
-    studentId: "",
     speciality: "",
     facilities: [],
     university: "",
@@ -211,7 +209,6 @@ const Register = () => {
     bannerImage: null,
     address: "",
     phone: "",
-    stageInstitution: "",
     letterFile: null,
     profileAttestation: null,
     // Nouveaux champs pour les experts
@@ -222,6 +219,7 @@ const Register = () => {
     publications: [],
     motivationLetter: null,
     missionAvailability: "",
+    expertBiography: "",
     // Champs pour les consentements
     acceptTerms: false,
     acceptPrivacy: false,
@@ -364,8 +362,6 @@ const Register = () => {
     switch (userType) {
       case "medecin":
         return ["Informations personnelles", "Profession", "Connexion", "Profil", "Consentements"];
-      case "etudiant":
-        return ["Informations", "Académique & stage", "Profil", "Consentements"];
       case "expert":
         return ["Informations", "Parcours académique", "Expertise", "Profession", "Profil", "Consentements"];
       default:
@@ -470,35 +466,13 @@ const Register = () => {
         return formData.acceptTerms && formData.acceptPrivacy;
       }
     }
-
-    // Étudiant flow existant
-    if (userType === "etudiant") {
-      if (currentStep === 0) {
-        return formData.firstName && formData.lastName && formData.email && formData.password && formData.confirmPassword;
-      }
-      if (currentStep === 1) {
-        return (
-          formData.university &&
-          formData.speciality &&
-          formData.diplomaFile &&
-          formData.stageInstitution &&
-          formData.letterFile
-        );
-      }
-      if (currentStep === 2) {
-        return formData.profileTitle && formData.biography;
-      }
-      if (currentStep === 3) {
-        return formData.acceptTerms && formData.acceptPrivacy;
-      }
-    }
     return true;
   };
 
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
-        if (userType === "medecin") {
+        if (userType === "medecin" || userType === "expert") {
           return (
             <>
               <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -567,120 +541,10 @@ const Register = () => {
             </>
           );
         }
-        return (
-          <>
-            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormInput 
-                id="firstName" 
-                label="Prénom" 
-                value={formData.firstName} 
-                onChange={handleInputChange} 
-                required 
-                size="lg" 
-                icon={<UserIcon className="w-5 h-5 text-gray-500" />}
-              />
-              <FormInput 
-                id="lastName" 
-                label="Nom" 
-                value={formData.lastName} 
-                onChange={handleInputChange} 
-                required 
-                size="lg" 
-              />
-            </div>
-            <FormInput
-              id="email"
-              label="Email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-              size="lg"
-              icon={<MailIcon className="w-5 h-5 text-gray-500" />}
-            />
-            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormInput
-                id="password"
-                label="Mot de passe"
-                type="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-                size="lg"
-                icon={<LockIcon className="w-5 h-5 text-gray-500" />}
-              />
-              <FormInput
-                id="confirmPassword"
-                label="Confirmer le mot de passe"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                required={true}
-                size="lg"
-              />
-            </div>
-          </>
-        );
+        return null;
 
       case 1:
-        if (userType === "etudiant") {
-          return (
-            <>
-              <CustomSelect
-                id="university"
-                label="Établissement académique"
-                value={formData.university}
-                onChange={handleInputChange}
-                options={educationOptions}
-                required={true}
-                icon={<BookOpenIcon className="w-5 h-5 text-gray-500" />}
-              />
-              <CustomSelect
-                id="speciality"
-                label="Spécialité"
-                value={formData.speciality}
-                onChange={handleInputChange}
-                options={specialityOptions}
-                required={true}
-              />
-              <div className="md:col-span-2">
-                <h3 className="text-lg font-medium text-gray-800 mb-2 flex items-center">
-                  <FileTextIcon className="w-5 h-5 mr-2 text-teal-600" />
-                  Attestation de présence / Diplôme (académique)
-                </h3>
-                <UploadField 
-                  id="diplomaFile" 
-                  label="Téléverser votre attestation ou diplôme" 
-                  file={formData.diplomaFile} 
-                  onChange={handleInputChange} 
-                  required={true} 
-                />
-              </div>
-              <CustomSelect
-                id="stageInstitution"
-                label="Établissement de stage"
-                value={formData.stageInstitution}
-                onChange={handleInputChange}
-                options={facilityOptions}
-                required={true}
-                icon={<BriefcaseIcon className="w-5 h-5 text-gray-500" />}
-              />
-              <div className="md:col-span-2">
-                <h3 className="text-lg font-medium text-gray-800 mb-2 flex items-center">
-                  <FileTextIcon className="w-5 h-5 mr-2 text-teal-600" />
-                  Attestation de présence (stage)
-                </h3>
-                <UploadField 
-                  id="letterFile" 
-                  label="Téléverser votre attestation de présence" 
-                  file={formData.letterFile} 
-                  onChange={handleInputChange} 
-                  required={true} 
-                />
-              </div>
-            </>
-          );
-        } else if (userType === "medecin") {
+        if (userType === "medecin") {
           return (
             <>
               <FormInput 
@@ -1059,7 +923,10 @@ const Register = () => {
             </>
           );
         }
-        if (userType === "etudiant") {
+        return null;
+
+      case 3:
+        if (userType === "medecin") {
           return (
             <>
               {/* Section 1: Présentation */}
@@ -1075,7 +942,7 @@ const Register = () => {
                   value={formData.profileTitle} 
                   onChange={handleInputChange} 
                   size="lg" 
-                  placeholder="Ex: Étudiant en médecine passionné par la cardiologie"
+                  placeholder="Ex: Cardiologue expérimenté avec 15 ans d'expérience"
                   className="mb-4"
                 />
                 
@@ -1085,7 +952,7 @@ const Register = () => {
                   </label>
                   <textarea 
                     id="biography" 
-                    placeholder="Décrivez votre parcours, vos centres d'intérêt et vos aspirations professionnelles..." 
+                    placeholder="Décrivez votre parcours, vos compétences et votre approche de soins..." 
                     value={formData.biography} 
                     onChange={handleInputChange} 
                     className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 min-h-32"
@@ -1129,8 +996,8 @@ const Register = () => {
                       id="bannerImage" 
                       label="Téléverser une bannière" 
                       file={formData.bannerImage} 
-                      onChange={handleInputChange} 
-                      required={true}
+                      onChange={handleInputChange}
+                      required={true} 
                     />
                   </div>
                 </div>
@@ -1140,7 +1007,7 @@ const Register = () => {
               <div className="md:col-span-2 mb-6 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
                 <h3 className="font-semibold text-xl text-teal-700 mb-6 pb-2 border-b border-gray-200 flex items-center">
                   <BriefcaseIcon className="w-6 h-6 mr-2" />
-                  Expériences et formations
+                  Expériences professionnelles
                 </h3>
                 
                 {formData.experiences.map((exp: any, idx: number) => (
@@ -1155,15 +1022,15 @@ const Register = () => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <FormInput 
-                        id={`exp-title-${idx}`}
-                        label="Poste ou formation" 
+                        id={`prof-exp-title-${idx}`}
+                        label="Poste occupé" 
                         value={exp.title} 
                         onChange={(e: any) => handleExperienceChange(idx, "title", e.target.value)} 
-                        placeholder="Ex: Stage en cardiologie"
+                        placeholder="Ex: Cardiologue interventionnel"
                       />
                       <FormInput 
-                        id={`exp-institution-${idx}`}
-                        label="Établissement" 
+                        id={`prof-exp-institution-${idx}`}
+                        label="Établissement professionnel" 
                         value={exp.institution} 
                         onChange={(e: any) => handleExperienceChange(idx, "institution", e.target.value)} 
                         placeholder="Ex: Hôpital Européen Georges-Pompidou"
@@ -1171,21 +1038,21 @@ const Register = () => {
                     </div>
                     
                     <FormInput 
-                      id={`exp-date-${idx}`}
+                      id={`prof-exp-date-${idx}`}
                       label="Période (de - à)" 
                       value={exp.date} 
                       onChange={(e: any) => handleExperienceChange(idx, "date", e.target.value)} 
-                      placeholder="Ex: Juin 2023 - Août 2023"
+                      placeholder="Ex: Janvier 2015 - Présent"
                       className="mb-4"
                       icon={<CalendarIcon className="w-5 h-5 text-gray-500" />}
                     />
                     
                     <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Description
+                        Description de l'expérience
                       </label>
                       <textarea 
-                        placeholder="Décrivez vos responsabilités et apprentissages..." 
+                        placeholder="Décrivez vos responsabilités et réalisations..." 
                         value={exp.description} 
                         onChange={(e: any) => handleExperienceChange(idx, "description", e.target.value)} 
                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
@@ -1193,11 +1060,11 @@ const Register = () => {
                     </div>
                     
                     <FormInput 
-                      id={`exp-skills-${idx}`}
+                      id={`prof-exp-skills-${idx}`}
                       label="Compétences acquises" 
                       value={exp.skills} 
                       onChange={(e: any) => handleExperienceChange(idx, "skills", e.target.value)} 
-                      placeholder="Ex: Prise de tension, ECG, Observation de consultations"
+                      placeholder="Ex: Angioplastie coronarienne, Pose de stent, Échocardiographie"
                       className="mb-4"
                     />
                     
@@ -1222,12 +1089,108 @@ const Register = () => {
                   <span className="mr-2">+</span> Ajouter une expérience
                 </button>
               </div>
+
+              {/* Section 3: Bénévolat */}
+              <div className="md:col-span-2 mb-6 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
+                <h3 className="font-semibold text-xl text-teal-700 mb-6 pb-2 border-b border-gray-200 flex items-center">
+                  <BriefcaseIcon className="w-6 h-6 mr-2" />
+                  Bénévolat
+                </h3>
+                {formData.benevolat.map((exp: any, idx: number) => (
+                  <div key={idx} className="border border-gray-200 p-5 rounded-xl mb-4 bg-gray-50 relative">
+                    <button 
+                      type="button" 
+                      onClick={() => removeBenevolat(idx)}
+                      className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <XIcon className="w-5 h-5" />
+                    </button>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <FormInput 
+                        id={`benevolat-title-${idx}`}
+                        label="Poste" 
+                        value={exp.title} 
+                        onChange={(e: any) => handleBenevolatChange(idx, "title", e.target.value)} 
+                        placeholder="Ex: Bénévole urgences"
+                      />
+                      <FormInput 
+                        id={`benevolat-institution-${idx}`}
+                        label="Établissement" 
+                        value={exp.institution} 
+                        onChange={(e: any) => handleBenevolatChange(idx, "institution", e.target.value)} 
+                        placeholder="Ex: Croix-Rouge"
+                      />
+                    </div>
+
+                    <FormInput 
+                      id={`benevolat-date-${idx}`}
+                      label="Période (de - à)" 
+                      value={exp.date} 
+                      onChange={(e: any) => handleBenevolatChange(idx, "date", e.target.value)} 
+                      placeholder="Ex: 2022 - 2023"
+                      className="mb-4"
+                      icon={<CalendarIcon className="w-5 h-5 text-gray-500" />}
+                    />
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                      </label>
+                      <textarea 
+                        placeholder="Décrivez vos missions..." 
+                        value={exp.description} 
+                        onChange={(e: any) => handleBenevolatChange(idx, "description", e.target.value)} 
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
+                      />
+                    </div>
+
+                    <FormInput 
+                      id={`benevolat-skills-${idx}`}
+                      label="Compétences acquises" 
+                      value={exp.skills} 
+                      onChange={(e: any) => handleBenevolatChange(idx, "skills", e.target.value)} 
+                      placeholder="Ex: Triage, premiers secours"
+                      className="mb-4"
+                    />
+
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Attestation ou certificat</h4>
+                      <UploadField 
+                        id={`benevolat-certificate-${idx}`} 
+                        label="Téléverser un document justificatif" 
+                        file={exp.certificate} 
+                        onChange={(e: any) => handleBenevolatChange(idx, "certificate", e.target.files?.[0])} 
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                <button 
+                  type="button" 
+                  onClick={addBenevolat} 
+                  className="px-5 py-2.5 bg-teal-100 text-teal-700 rounded-xl shadow-sm hover:bg-teal-200 transition-all duration-200 flex items-center font-medium"
+                >
+                  <span className="mr-2">+</span> Ajouter une activité bénévole
+                </button>
+              </div>
+
+              {/* Section 4: Attestation générale du profil */}
+              <div className="md:col-span-2 mb-6 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
+                <h3 className="text-lg font-medium text-gray-800 mb-2 flex items-center">
+                  <FileTextIcon className="w-5 h-5 mr-2 text-teal-600" />
+                  Attestation générale
+                </h3>
+                <UploadField 
+                  id="profileAttestation" 
+                  label="Téléverser une attestation (optionnel)" 
+                  file={formData.profileAttestation} 
+                  onChange={handleInputChange}
+                />
+              </div>
             </>
           );
         }
-        return null;
-
-      case 3:
         if (userType === "expert") {
           return (
             <>
@@ -1287,318 +1250,7 @@ const Register = () => {
             </>
           );
         }
-        return (
-          <>
-            {/* Section 1: Présentation */}
-            <div className="md:col-span-2 mb-8 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
-              <h3 className="font-semibold text-xl text-teal-700 mb-6 pb-2 border-b border-gray-200 flex items-center">
-                <UserIcon className="w-6 h-6 mr-2" />
-                Présentation
-              </h3>
-              
-              <FormInput 
-                id="profileTitle" 
-                label="Titre du profil" 
-                value={formData.profileTitle} 
-                onChange={handleInputChange} 
-                size="lg" 
-                placeholder="Ex: Cardiologue expérimenté avec 15 ans d'expérience"
-                className="mb-4"
-              />
-              
-              <div className="mb-4">
-                <label htmlFor="biography" className="block text-sm font-medium text-gray-700 mb-2">
-                  À propos de vous
-                </label>
-                <textarea 
-                  id="biography" 
-                  placeholder="Décrivez votre parcours, vos compétences et votre approche de soins..." 
-                  value={formData.biography} 
-                  onChange={handleInputChange} 
-                  className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 min-h-32"
-                  required
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <FormInput 
-                  id="address" 
-                  label="Adresse" 
-                  value={formData.address} 
-                  onChange={handleInputChange} 
-                  size="lg" 
-                  icon={<MapPinIcon className="w-5 h-5 text-gray-500" />}
-                />
-                <FormInput 
-                  id="phone" 
-                  label="Téléphone" 
-                  value={formData.phone} 
-                  onChange={handleInputChange} 
-                  size="lg" 
-                  icon={<PhoneIcon className="w-5 h-5 text-gray-500" />}
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Photo de profil</h4>
-                  <UploadField 
-                    id="profileImage" 
-                    label="Téléverser une photo" 
-                    file={formData.profileImage} 
-                    onChange={handleInputChange} 
-                    required={true}
-                  />
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Bannière de profil</h4>
-                  <UploadField 
-                    id="bannerImage" 
-                    label="Téléverser une bannière" 
-                    file={formData.bannerImage} 
-                    onChange={handleInputChange}
-                    required={true} 
-                  />
-                </div>
-              </div>
-
-              {/* Champ spécial pour les experts */}
-              {userType === ("expert" as UserType) && (
-                <div className="mt-4">
-                  <FormInput 
-                    id="missionAvailability" 
-                    label="Disponibilité missions" 
-                    value={formData.missionAvailability} 
-                    onChange={handleInputChange} 
-                    size="lg" 
-                    placeholder="Ex: Disponible 2 jours par semaine, weekends possibles"
-                    required={true}
-                    icon={<CalendarIcon className="w-5 h-5 text-gray-500" />}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Section 2: Expériences */}
-            <div className="md:col-span-2 mb-6 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
-              <h3 className="font-semibold text-xl text-teal-700 mb-6 pb-2 border-b border-gray-200 flex items-center">
-                <BriefcaseIcon className="w-6 h-6 mr-2" />
-                Expériences professionnelles
-              </h3>
-              
-              {formData.experiences.map((exp: any, idx: number) => (
-                <div key={idx} className="border border-gray-200 p-5 rounded-xl mb-4 bg-gray-50 relative">
-                  <button 
-                    type="button" 
-                    onClick={() => removeExperience(idx)}
-                    className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"
-                  >
-                    <XIcon className="w-5 h-5" />
-                  </button>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <FormInput 
-                      id={`prof-exp-title-${idx}`}
-                      label="Poste occupé" 
-                      value={exp.title} 
-                      onChange={(e: any) => handleExperienceChange(idx, "title", e.target.value)} 
-                      placeholder="Ex: Cardiologue interventionnel"
-                    />
-                    <FormInput 
-                      id={`prof-exp-institution-${idx}`}
-                      label="Établissement professionnel" 
-                      value={exp.institution} 
-                      onChange={(e: any) => handleExperienceChange(idx, "institution", e.target.value)} 
-                      placeholder="Ex: Hôpital Européen Georges-Pompidou"
-                    />
-                  </div>
-                  
-                  <FormInput 
-                    id={`prof-exp-date-${idx}`}
-                    label="Période (de - à)" 
-                    value={exp.date} 
-                    onChange={(e: any) => handleExperienceChange(idx, "date", e.target.value)} 
-                    placeholder="Ex: Janvier 2015 - Présent"
-                    className="mb-4"
-                    icon={<CalendarIcon className="w-5 h-5 text-gray-500" />}
-                  />
-                  
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description de l'expérience
-                    </label>
-                    <textarea 
-                      placeholder="Décrivez vos responsabilités et réalisations..." 
-                      value={exp.description} 
-                      onChange={(e: any) => handleExperienceChange(idx, "description", e.target.value)} 
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
-                    />
-                  </div>
-                  
-                  <FormInput 
-                    id={`prof-exp-skills-${idx}`}
-                    label="Compétences acquises" 
-                    value={exp.skills} 
-                    onChange={(e: any) => handleExperienceChange(idx, "skills", e.target.value)} 
-                    placeholder="Ex: Angioplastie coronarienne, Pose de stent, Échocardiographie"
-                    className="mb-4"
-                  />
-                  
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Attestation ou certificat</h4>
-                    <UploadField 
-                      id={`certificate-${idx}`} 
-                      label="Téléverser un document justificatif" 
-                      file={exp.certificate} 
-                      required={true}
-                      onChange={(e: any) => handleExperienceChange(idx, "certificate", e.target.files?.[0])} 
-                    />
-                  </div>
-                </div>
-              ))}
-              
-              <button 
-                type="button" 
-                onClick={addExperience} 
-                className="px-5 py-2.5 bg-teal-100 text-teal-700 rounded-xl shadow-sm hover:bg-teal-200 transition-all duration-200 flex items-center font-medium"
-              >
-                <span className="mr-2">+</span> Ajouter une expérience
-              </button>
-            </div>
-
-            {/* Section 3: Bénévolat */}
-            <div className="md:col-span-2 mb-6 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
-              <h3 className="font-semibold text-xl text-teal-700 mb-6 pb-2 border-b border-gray-200 flex items-center">
-                <BriefcaseIcon className="w-6 h-6 mr-2" />
-                Bénévolat
-              </h3>
-              {formData.benevolat.map((exp: any, idx: number) => (
-                <div key={idx} className="border border-gray-200 p-5 rounded-xl mb-4 bg-gray-50 relative">
-                  <button 
-                    type="button" 
-                    onClick={() => removeBenevolat(idx)}
-                    className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"
-                  >
-                    <XIcon className="w-5 h-5" />
-                  </button>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <FormInput 
-                      id={`benevolat-title-${idx}`}
-                      label="Poste" 
-                      value={exp.title} 
-                      onChange={(e: any) => handleBenevolatChange(idx, "title", e.target.value)} 
-                      placeholder="Ex: Bénévole urgences"
-                    />
-                    <FormInput 
-                      id={`benevolat-institution-${idx}`}
-                      label="Établissement" 
-                      value={exp.institution} 
-                      onChange={(e: any) => handleBenevolatChange(idx, "institution", e.target.value)} 
-                      placeholder="Ex: Croix-Rouge"
-                    />
-                  </div>
-
-                  <FormInput 
-                    id={`benevolat-date-${idx}`}
-                    label="Période (de - à)" 
-                    value={exp.date} 
-                    onChange={(e: any) => handleBenevolatChange(idx, "date", e.target.value)} 
-                    placeholder="Ex: 2022 - 2023"
-                    className="mb-4"
-                    icon={<CalendarIcon className="w-5 h-5 text-gray-500" />}
-                  />
-
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description
-                    </label>
-                    <textarea 
-                      placeholder="Décrivez vos missions..." 
-                      value={exp.description} 
-                      onChange={(e: any) => handleBenevolatChange(idx, "description", e.target.value)} 
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
-                    />
-                  </div>
-
-                  <FormInput 
-                    id={`benevolat-skills-${idx}`}
-                    label="Compétences acquises" 
-                    value={exp.skills} 
-                    onChange={(e: any) => handleBenevolatChange(idx, "skills", e.target.value)} 
-                    placeholder="Ex: Triage, premiers secours"
-                    className="mb-4"
-                  />
-
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Attestation ou certificat</h4>
-                    <UploadField 
-                      id={`benevolat-certificate-${idx}`} 
-                      label="Téléverser un document justificatif" 
-                      file={exp.certificate} 
-                      onChange={(e: any) => handleBenevolatChange(idx, "certificate", e.target.files?.[0])} 
-                    />
-                  </div>
-                </div>
-              ))}
-
-              <button 
-                type="button" 
-                onClick={addBenevolat} 
-                className="px-5 py-2.5 bg-teal-100 text-teal-700 rounded-xl shadow-sm hover:bg-teal-200 transition-all duration-200 flex items-center font-medium"
-              >
-                <span className="mr-2">+</span> Ajouter une activité bénévole
-              </button>
-            </div>
-
-            {/* Section 4: Attestation générale du profil */}
-            <div className="md:col-span-2 mb-6 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
-              <h3 className="text-lg font-medium text-gray-800 mb-2 flex items-center">
-                <FileTextIcon className="w-5 h-5 mr-2 text-teal-600" />
-                Attestation générale
-              </h3>
-              <UploadField 
-                id="profileAttestation" 
-                label="Téléverser une attestation (optionnel)" 
-                file={formData.profileAttestation} 
-                onChange={handleInputChange}
-              />
-            </div>
-
-            {/* Section supplémentaire pour les experts */}
-            {userType === ("expert" as UserType) && (
-              <div className="md:col-span-2 mb-6 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
-                <h3 className="font-semibold text-xl text-amber-700 mb-6 pb-2 border-b border-gray-200 flex items-center">
-                  <AwardIcon className="w-6 h-6 mr-2" />
-                  Biographie détaillée
-                </h3>
-                
-                <div className="mb-4">
-                  <label htmlFor="expertBiography" className="block text-sm font-medium text-gray-700 mb-2">
-                    Présentation détaillée de votre expertise
-                  </label>
-                  <textarea 
-                    id="expertBiography" 
-                    placeholder="Décrivez en détail votre parcours, vos domaines d'expertise, vos publications, vos réalisations..." 
-                    value={formData.expertBiography} 
-                    onChange={handleInputChange} 
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 min-h-40"
-                    required
-                  />
-                </div>
-                
-                <FormInput 
-                  id="expertiseDomain" 
-                  label="Domaine d'expertise principal" 
-                  value={formData.expertiseDomain} 
-                  onChange={handleInputChange} 
-                  size="lg" 
-                  placeholder="Ex: Cardiologie interventionnelle"
-                />
-              </div>
-            )}
-          </>
-        );
+        return null;
 
       case 4:
         if (userType === "medecin") {
@@ -1644,46 +1296,317 @@ const Register = () => {
             </>
           );
         }
-        if (userType === "etudiant") {
+        if (userType === "expert") {
           return (
             <>
-              {/* Section Consentements pour étudiant */}
+              {/* Section 1: Présentation */}
               <div className="md:col-span-2 mb-8 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
-                <h3 className="font-semibold text-xl text-blue-700 mb-6 pb-2 border-b border-gray-200 flex items-center">
-                  <FileTextIcon className="w-6 h-6 mr-2" />
-                  Consentements / Validations
+                <h3 className="font-semibold text-xl text-teal-700 mb-6 pb-2 border-b border-gray-200 flex items-center">
+                  <UserIcon className="w-6 h-6 mr-2" />
+                  Présentation
                 </h3>
                 
-                <div className="space-y-4">
-                  <div className="flex items-start">
-                    <input
-                      type="checkbox"
-                      id="acceptTerms"
-                      checked={formData.acceptTerms}
-                      onChange={(e) => setFormData((prev: any) => ({ ...prev, acceptTerms: e.target.checked }))}
-                      className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      required
+                <FormInput 
+                  id="profileTitle" 
+                  label="Titre du profil" 
+                  value={formData.profileTitle} 
+                  onChange={handleInputChange} 
+                  size="lg" 
+                  placeholder="Ex: Cardiologue expérimenté avec 15 ans d'expérience"
+                  className="mb-4"
+                />
+                
+                <div className="mb-4">
+                  <label htmlFor="biography" className="block text-sm font-medium text-gray-700 mb-2">
+                    À propos de vous
+                  </label>
+                  <textarea 
+                    id="biography" 
+                    placeholder="Décrivez votre parcours, vos compétences et votre approche de soins..." 
+                    value={formData.biography} 
+                    onChange={handleInputChange} 
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 min-h-32"
+                    required
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <FormInput 
+                    id="address" 
+                    label="Adresse" 
+                    value={formData.address} 
+                    onChange={handleInputChange} 
+                    size="lg" 
+                    icon={<MapPinIcon className="w-5 h-5 text-gray-500" />}
+                  />
+                  <FormInput 
+                    id="phone" 
+                    label="Téléphone" 
+                    value={formData.phone} 
+                    onChange={handleInputChange} 
+                    size="lg" 
+                    icon={<PhoneIcon className="w-5 h-5 text-gray-500" />}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Photo de profil</h4>
+                    <UploadField 
+                      id="profileImage" 
+                      label="Téléverser une photo" 
+                      file={formData.profileImage} 
+                      onChange={handleInputChange} 
+                      required={true}
                     />
-                    <label htmlFor="acceptTerms" className="ml-3 text-sm text-gray-700">
-                      <span className="font-medium">J'accepte les conditions d'utilisation</span> de la plateforme de collaboration médicale. Je comprends et accepte les termes et conditions d'utilisation du service.
-                    </label>
                   </div>
-                  
-                  <div className="flex items-start">
-                    <input
-                      type="checkbox"
-                      id="acceptPrivacy"
-                      checked={formData.acceptPrivacy}
-                      onChange={(e) => setFormData((prev: any) => ({ ...prev, acceptPrivacy: e.target.checked }))}
-                      className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      required
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Bannière de profil</h4>
+                    <UploadField 
+                      id="bannerImage" 
+                      label="Téléverser une bannière" 
+                      file={formData.bannerImage} 
+                      onChange={handleInputChange}
+                      required={true} 
                     />
-                    <label htmlFor="acceptPrivacy" className="ml-3 text-sm text-gray-700">
-                      <span className="font-medium">J'accepte la politique de confidentialité</span> et consens au traitement de mes données personnelles conformément au RGPD.
-                    </label>
                   </div>
                 </div>
+
+                {/* Champ spécial pour les experts */}
+                {userType === ("expert" as UserType) && (
+                  <div className="mt-4">
+                    <FormInput 
+                      id="missionAvailability" 
+                      label="Disponibilité missions" 
+                      value={formData.missionAvailability} 
+                      onChange={handleInputChange} 
+                      size="lg" 
+                      placeholder="Ex: Disponible 2 jours par semaine, weekends possibles"
+                      required={true}
+                      icon={<CalendarIcon className="w-5 h-5 text-gray-500" />}
+                    />
+                  </div>
+                )}
               </div>
+
+              {/* Section 2: Expériences */}
+              <div className="md:col-span-2 mb-6 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
+                <h3 className="font-semibold text-xl text-teal-700 mb-6 pb-2 border-b border-gray-200 flex items-center">
+                  <BriefcaseIcon className="w-6 h-6 mr-2" />
+                  Expériences professionnelles
+                </h3>
+                
+                {formData.experiences.map((exp: any, idx: number) => (
+                  <div key={idx} className="border border-gray-200 p-5 rounded-xl mb-4 bg-gray-50 relative">
+                    <button 
+                      type="button" 
+                      onClick={() => removeExperience(idx)}
+                      className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <XIcon className="w-5 h-5" />
+                    </button>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <FormInput 
+                        id={`prof-exp-title-${idx}`}
+                        label="Poste occupé" 
+                        value={exp.title} 
+                        onChange={(e: any) => handleExperienceChange(idx, "title", e.target.value)} 
+                        placeholder="Ex: Cardiologue interventionnel"
+                      />
+                      <FormInput 
+                        id={`prof-exp-institution-${idx}`}
+                        label="Établissement professionnel" 
+                        value={exp.institution} 
+                        onChange={(e: any) => handleExperienceChange(idx, "institution", e.target.value)} 
+                        placeholder="Ex: Hôpital Européen Georges-Pompidou"
+                      />
+                    </div>
+                    
+                    <FormInput 
+                      id={`prof-exp-date-${idx}`}
+                      label="Période (de - à)" 
+                      value={exp.date} 
+                      onChange={(e: any) => handleExperienceChange(idx, "date", e.target.value)} 
+                      placeholder="Ex: Janvier 2015 - Présent"
+                      className="mb-4"
+                      icon={<CalendarIcon className="w-5 h-5 text-gray-500" />}
+                    />
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Description de l'expérience
+                      </label>
+                      <textarea 
+                        placeholder="Décrivez vos responsabilités et réalisations..." 
+                        value={exp.description} 
+                        onChange={(e: any) => handleExperienceChange(idx, "description", e.target.value)} 
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
+                      />
+                    </div>
+                    
+                    <FormInput 
+                      id={`prof-exp-skills-${idx}`}
+                      label="Compétences acquises" 
+                      value={exp.skills} 
+                      onChange={(e: any) => handleExperienceChange(idx, "skills", e.target.value)} 
+                      placeholder="Ex: Angioplastie coronarienne, Pose de stent, Échocardiographie"
+                      className="mb-4"
+                    />
+                    
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Attestation ou certificat</h4>
+                      <UploadField 
+                        id={`certificate-${idx}`} 
+                        label="Téléverser un document justificatif" 
+                        file={exp.certificate} 
+                        required={true}
+                        onChange={(e: any) => handleExperienceChange(idx, "certificate", e.target.files?.[0])} 
+                      />
+                    </div>
+                  </div>
+                ))}
+                
+                <button 
+                  type="button" 
+                  onClick={addExperience} 
+                  className="px-5 py-2.5 bg-teal-100 text-teal-700 rounded-xl shadow-sm hover:bg-teal-200 transition-all duration-200 flex items-center font-medium"
+                >
+                  <span className="mr-2">+</span> Ajouter une expérience
+                </button>
+              </div>
+
+              {/* Section 3: Bénévolat */}
+              <div className="md:col-span-2 mb-6 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
+                <h3 className="font-semibold text-xl text-teal-700 mb-6 pb-2 border-b border-gray-200 flex items-center">
+                  <BriefcaseIcon className="w-6 h-6 mr-2" />
+                  Bénévolat
+                </h3>
+                {formData.benevolat.map((exp: any, idx: number) => (
+                  <div key={idx} className="border border-gray-200 p-5 rounded-xl mb-4 bg-gray-50 relative">
+                    <button 
+                      type="button" 
+                      onClick={() => removeBenevolat(idx)}
+                      className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <XIcon className="w-5 h-5" />
+                    </button>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <FormInput 
+                        id={`benevolat-title-${idx}`}
+                        label="Poste" 
+                        value={exp.title} 
+                        onChange={(e: any) => handleBenevolatChange(idx, "title", e.target.value)} 
+                        placeholder="Ex: Bénévole urgences"
+                      />
+                      <FormInput 
+                        id={`benevolat-institution-${idx}`}
+                        label="Établissement" 
+                        value={exp.institution} 
+                        onChange={(e: any) => handleBenevolatChange(idx, "institution", e.target.value)} 
+                        placeholder="Ex: Croix-Rouge"
+                      />
+                    </div>
+
+                    <FormInput 
+                      id={`benevolat-date-${idx}`}
+                      label="Période (de - à)" 
+                      value={exp.date} 
+                      onChange={(e: any) => handleBenevolatChange(idx, "date", e.target.value)} 
+                      placeholder="Ex: 2022 - 2023"
+                      className="mb-4"
+                      icon={<CalendarIcon className="w-5 h-5 text-gray-500" />}
+                    />
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                      </label>
+                      <textarea 
+                        placeholder="Décrivez vos missions..." 
+                        value={exp.description} 
+                        onChange={(e: any) => handleBenevolatChange(idx, "description", e.target.value)} 
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
+                      />
+                    </div>
+
+                    <FormInput 
+                      id={`benevolat-skills-${idx}`}
+                      label="Compétences acquises" 
+                      value={exp.skills} 
+                      onChange={(e: any) => handleBenevolatChange(idx, "skills", e.target.value)} 
+                      placeholder="Ex: Triage, premiers secours"
+                      className="mb-4"
+                    />
+
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Attestation ou certificat</h4>
+                      <UploadField 
+                        id={`benevolat-certificate-${idx}`} 
+                        label="Téléverser un document justificatif" 
+                        file={exp.certificate} 
+                        onChange={(e: any) => handleBenevolatChange(idx, "certificate", e.target.files?.[0])} 
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                <button 
+                  type="button" 
+                  onClick={addBenevolat} 
+                  className="px-5 py-2.5 bg-teal-100 text-teal-700 rounded-xl shadow-sm hover:bg-teal-200 transition-all duration-200 flex items-center font-medium"
+                >
+                  <span className="mr-2">+</span> Ajouter une activité bénévole
+                </button>
+              </div>
+
+              {/* Section 4: Attestation générale du profil */}
+              <div className="md:col-span-2 mb-6 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
+                <h3 className="text-lg font-medium text-gray-800 mb-2 flex items-center">
+                  <FileTextIcon className="w-5 h-5 mr-2 text-teal-600" />
+                  Attestation générale
+                </h3>
+                <UploadField 
+                  id="profileAttestation" 
+                  label="Téléverser une attestation (optionnel)" 
+                  file={formData.profileAttestation} 
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              {/* Section supplémentaire pour les experts */}
+              {userType === ("expert" as UserType) && (
+                <div className="md:col-span-2 mb-6 border border-gray-200 p-6 rounded-2xl bg-white shadow-sm">
+                  <h3 className="font-semibold text-xl text-amber-700 mb-6 pb-2 border-b border-gray-200 flex items-center">
+                    <AwardIcon className="w-6 h-6 mr-2" />
+                    Biographie détaillée
+                  </h3>
+                  
+                  <div className="mb-4">
+                    <label htmlFor="expertBiography" className="block text-sm font-medium text-gray-700 mb-2">
+                      Présentation détaillée de votre expertise
+                    </label>
+                    <textarea 
+                      id="expertBiography" 
+                      placeholder="Décrivez en détail votre parcours, vos domaines d'expertise, vos publications, vos réalisations..." 
+                      value={formData.expertBiography} 
+                      onChange={handleInputChange} 
+                      className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 min-h-40"
+                      required
+                    />
+                  </div>
+                  
+                  <FormInput 
+                    id="expertiseDomain" 
+                    label="Domaine d'expertise principal" 
+                    value={formData.expertiseDomain} 
+                    onChange={handleInputChange} 
+                    size="lg" 
+                    placeholder="Ex: Cardiologie interventionnelle"
+                  />
+                </div>
+              )}
             </>
           );
         }
@@ -1760,10 +1683,9 @@ const Register = () => {
         Sélectionnez votre profil pour commencer l'inscription
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {[
           { id: "medecin", title: "Médecin", description: "Pour les praticiens toutes spécialités", icon: <StethoscopeIcon className="w-8 h-8 text-white" />, color: "from-teal-500 to-teal-700" },
-          { id: "etudiant", title: "Étudiant", description: "Pour les étudiants en médecine inscrits à l'université", icon: <GraduationCapIcon className="w-8 h-8 text-white" />, color: "from-blue-500 to-blue-700" },
           { id: "expert", title: "Expert", description: "Médecins reconnus comme experts médicaux certifiés", icon: <AwardIcon className="w-8 h-8 text-white" />, color: "from-amber-500 to-amber-700" },
         ].map(card => (
           <div
@@ -1796,7 +1718,7 @@ const Register = () => {
             <div className="px-5 sm:px-6 pt-4 pb-3 border-b border-gray-200 sticky top-0 bg-gradient-to-r from-teal-50 to-white z-10 rounded-t-2xl">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl sm:text-2xl font-light text-teal-700">
-                {userType === "medecin" ? "Inscription Médecin" : userType === "etudiant" ? "Inscription Étudiant" : "Inscription Expert"}
+                {userType === "medecin" ? "Inscription Médecin" : "Inscription Expert"}
                 </h2>
                 <button 
                   onClick={() => { setUserType(null); setCurrentStep(0); }} 

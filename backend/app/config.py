@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     MONGO_HOST: str = "localhost"
     MONGO_PORT: int = 27017
-    MONGO_DB: str = "medical_db"
+    MONGO_DB: str = "MedicalDB"
     MONGO_USER: str | None = None
     MONGO_PASSWORD: str | None = None
 
