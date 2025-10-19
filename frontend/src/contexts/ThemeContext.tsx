@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createContext, useContext } from 'react';
-import { useAuth } from '../contexts/AuthContext2';
+import { useAuth } from '../contexts/AuthContext';
 export type Specialty = 'cardiologie' | 'pédiatrie' | 'dermatologie' | 'pneumologie' | 'neurologie' | 'ophtalmologie' | 'orthopédie' | 'psychiatrie' | 'default';
 interface ThemeContextType {
   theme: {

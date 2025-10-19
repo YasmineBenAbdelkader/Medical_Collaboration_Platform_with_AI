@@ -1,4 +1,6 @@
-export interface CaseAuthor {
+// src/services/storage.ts
+
+export interface CaseAuthor { 
 	id: string;
 	name: string;
 	avatar: string;
@@ -11,41 +13,57 @@ export interface StoredCase {
 	excerpt: string;
 	content?: string;
 	author: CaseAuthor;
-	createdAt: number; // epoch ms
+	createdAt: number;
 	commentCount: number;
 	likeCount: number;
 	hasImage?: boolean;
-	imageUrl?: string; // can be base64 data URL
+	imageUrl?: string;
 	tags?: string[];
 	isUrgent?: boolean;
+	isResolved?: boolean;
 }
 
 const STORAGE_KEY = 'medcollab.cases';
 
+// 🔒 Fonctions sûres avec vérification de localStorage
+function safeGetItem(key: string): string | null {
+	if (typeof window === 'undefined') return null;
+	return localStorage.getItem(key);
+}
+
+function safeSetItem(key: string, value: string): void {
+	if (typeof window === 'undefined') return;
+	localStorage.setItem(key, value);
+}
+
 function readCases(): StoredCase[] {
 	try {
-		const raw = localStorage.getItem(STORAGE_KEY);
+		const raw = safeGetItem(STORAGE_KEY);
 		if (!raw) return [];
 		const parsed: StoredCase[] = JSON.parse(raw);
 		return Array.isArray(parsed) ? parsed : [];
-	} catch {
+	} catch (err) {
+		console.error("❌ Erreur de lecture localStorage :", err);
 		return [];
 	}
 }
 
 function writeCases(cases: StoredCase[]): void {
-	localStorage.setItem(STORAGE_KEY, JSON.stringify(cases));
+	console.log("💾 writeCases() =>", cases.length, "cas");
+	safeSetItem(STORAGE_KEY, JSON.stringify(cases));
 }
 
 export function getCases(): StoredCase[] {
 	return readCases().sort((a, b) => b.createdAt - a.createdAt);
 }
 
-export function addCase(newCase: Omit<StoredCase, 'id' | 'createdAt' | 'commentCount' | 'likeCount'>): StoredCase {
+export function addCase(
+	newCase: Omit<StoredCase, 'id' | 'createdAt' | 'commentCount' | 'likeCount'>
+): StoredCase {
 	const cases = readCases();
 	const created: StoredCase = {
 		...newCase,
-		id: (crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`),
+		id: crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
 		createdAt: Date.now(),
 		commentCount: 0,
 		likeCount: 0,
@@ -71,61 +89,90 @@ export function clearCases(): void {
 
 export function seedCasesIfEmpty(): void {
 	const existing = readCases();
+	console.log("📦 seedCasesIfEmpty() —", existing.length, "cas existants");
+
 	if (existing.length > 0) return;
+
+	console.log("🌱 Aucun cas trouvé, création du seed initial...");
+
 	const seed: StoredCase[] = [
 		{
 			id: '1',
-			title: 'Patient avec arythmie cardiaque inexpliquée',
-			excerpt: "Homme de 54 ans présentant des épisodes d'arythmie cardiaque depuis 3 semaines. ECG et analyses sanguines normaux. Antécédents familiaux de problèmes cardiaques...",
+			title: 'Suspicion de sténose sévère sur angiographie coronarienne',
+			excerpt: "Homme de 62 ans, douleurs thoraciques à l'effort. Angiographie montre une sténose estimée à 80% de l'artère interventriculaire antérieure.",
 			author: {
-				id: '2',
-				name: 'Dr. Thomas Dubois',
-				avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+				id: '10',
+				name: 'Dr. Claire Bernard',
+				avatar: 'https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
 				specialty: 'Cardiologie',
 			},
-			createdAt: Date.now() - 1000 * 60 * 10,
-			commentCount: 12,
-			likeCount: 24,
+			createdAt: Date.now() - 1000 * 60 * 20,
+			commentCount: 14,
+			likeCount: 32,
 			hasImage: true,
-			imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80',
-			tags: ['Cardiologie', 'Arythmie', 'ECG'],
-			isUrgent: false,
+			imageUrl: '/images/11.png',
+			tags: ['Cardiologie', 'Angiographie', 'Sténose'],
+			isUrgent: true,
+			isResolved: false,
 		},
 		{
 			id: '2',
-			title: "Cas complexe de dermatite - besoin d'avis",
-			excerpt: 'Patiente de 32 ans avec éruption cutanée progressive depuis 2 mois. Résistante aux traitements standard. Biopsie suggère...',
+			title: 'Infarctus du myocarde antérieur traité avec succès par angioplastie',
+			excerpt: "Patient de 58 ans admis en urgence pour douleur thoracique aiguë. Angiographie : occlusion totale de la coronaire gauche. Pose de stent réussie.",
 			author: {
-				id: '3',
-				name: 'Dr. Marie Laurent',
-				avatar: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-				specialty: 'Dermatologie',
+				id: '11',
+				name: 'Dr. Thomas Dubois',
+				avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+				specialty: 'Cardiologie interventionnelle',
 			},
 			createdAt: Date.now() - 1000 * 60 * 60,
-			commentCount: 8,
-			likeCount: 15,
+			commentCount: 20,
+			likeCount: 45,
 			hasImage: true,
-			imageUrl: 'https://images.unsplash.com/photo-1579165466991-467135ad3110?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80',
-			tags: ['Dermatologie', 'Allergie', 'Biopsie'],
+			imageUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80',
+			tags: ['Cardiologie', 'Infarctus', 'Stent', 'Urgence'],
 			isUrgent: true,
+			isResolved: true,
 		},
 		{
 			id: '3',
-			title: 'Douleur abdominale atypique chez un adolescent',
-			excerpt: "Adolescent de 16 ans avec douleur abdominale intermittente depuis 6 semaines. Examens d'imagerie normaux mais symptômes persistants...",
+			title: 'Arythmie post-infarctus chez un patient diabétique',
+			excerpt: "Homme de 67 ans, antécédent d'infarctus il y a 3 mois. Présente des épisodes d’arythmie ventriculaire à répétition.",
 			author: {
-				id: '4',
-				name: 'Dr. Antoine Moreau',
-				avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-				specialty: 'Pédiatrie',
+				id: '12',
+				name: 'Dr. Nadia Lefèvre',
+				avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+				specialty: 'Cardiologie rythmologie',
 			},
-			createdAt: Date.now() - 1000 * 60 * 60 * 24 * 2,
-			commentCount: 5,
-			likeCount: 9,
+			createdAt: Date.now() - 1000 * 60 * 60 * 24,
+			commentCount: 9,
+			likeCount: 22,
 			hasImage: false,
-			tags: ['Pédiatrie', 'Gastroentérologie', 'Douleur chronique'],
+			tags: ['Arythmie', 'Post-infarctus', 'Cardiologie'],
 			isUrgent: false,
+			isResolved: false,
+		},
+		{
+			id: '4',
+			title: 'Cas de cardiomyopathie dilatée avec insuffisance cardiaque',
+			excerpt: "Patiente de 45 ans, essoufflement progressif. Échocardiographie : fraction d’éjection à 30%, ventricule gauche dilaté.",
+			author: {
+				id: '13',
+				name: 'Dr. Jean Morel',
+				avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+				specialty: 'Cardiologie clinique',
+			},
+			createdAt: Date.now() - 1000 * 60 * 60 * 5,
+			commentCount: 11,
+			likeCount: 18,
+			hasImage: true,
+			imageUrl: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80',
+			tags: ['Cardiologie', 'Insuffisance cardiaque', 'Échographie'],
+			isUrgent: false,
+			isResolved: false,
 		},
 	];
+
 	writeCases(seed);
+	console.log("✅ Cas seedés avec succès :", seed.length);
 }

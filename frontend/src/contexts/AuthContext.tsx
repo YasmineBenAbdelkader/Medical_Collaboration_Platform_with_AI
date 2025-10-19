@@ -1,24 +1,26 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, createContext, useContext, useEffect } from 'react';
 
-type UserRole = 'doctor' | 'student' | 'expert' | 'admin';
+export type UserRole = 'doctor' | 'expert' | 'admin';
 
-interface User {
+export interface User {
   id: string;
   name: string;
+  email: string;
   role: UserRole;
   specialty: string;
   avatar: string;
+  hospital?: string;
   availableSpecialties?: string[];
   twoFactorEnabled?: boolean;
 }
 
-interface LoginResult {
+export interface LoginResult {
   success: boolean;
   require2fa?: boolean;
   message?: string;
 }
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<LoginResult>;
@@ -30,23 +32,21 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>({
-    id: '1',
-    name: 'Dr. Sophie Martin',
-    role: 'doctor',
-    specialty: 'Cardiologie',
-    avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-    availableSpecialties: ['Cardiologie'],
-    twoFactorEnabled: true,
-  });
-
-  // Progressive lock
+  const [user, setUser] = useState<User | null>(null);
   const [failedAttempts, setFailedAttempts] = useState<number>(0);
   const [lockedUntil, setLockedUntil] = useState<number | null>(null);
 
+  // Check if user is already logged in from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   const now = () => Date.now();
 
-  const login = async (_email: string, _password: string): Promise<LoginResult> => {
+  const login = async (email: string, password: string): Promise<LoginResult> => {
     // Check lock
     if (lockedUntil && now() < lockedUntil) {
       const remaining = Math.ceil((lockedUntil - now()) / 1000);
@@ -54,13 +54,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     // DEMO validation: require minimal password length
-    const isValid = _password.length >= 4;
+    const isValid = password.length >= 4;
     if (!isValid) {
       const next = failedAttempts + 1;
       setFailedAttempts(next);
       // Lock after 5 failed attempts for 5 minutes
       if (next >= 5) {
-        const lockDurationMs = next >= 7 ? 15 * 60 * 1000 : 5 * 60 * 1000; // escalate
+        const lockDurationMs = next >= 7 ? 15 * 60 * 1000 : 5 * 60 * 1000;
         setLockedUntil(now() + lockDurationMs);
       }
       return { success: false, message: 'Identifiants invalides.' };
@@ -70,16 +70,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setFailedAttempts(0);
     setLockedUntil(null);
 
-    // Normally: fetch user + claims from backend; ici on force une seule spécialité pour médecin
-    setUser({
-      id: '1',
-      name: 'Dr. Sophie Martin',
-      role: 'doctor',
-      specialty: 'Cardiologie',
-      avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-      availableSpecialties: ['Cardiologie'],
-      twoFactorEnabled: true,
-    });
+    // Mock users based on email
+    let mockUser: User;
+    if (email.includes('admin')) {
+      mockUser = {
+        id: '3',
+        name: 'Admin System',
+        email: email,
+        role: 'admin',
+        specialty: 'Administration',
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+        hospital: 'Système',
+        twoFactorEnabled: true,
+      };
+    } else if (email.includes('expert')) {
+      mockUser = {
+        id: '2',
+        name: 'Dr. Expert Martin',
+        email: email,
+        role: 'expert',
+        specialty: 'Cardiologie',
+        avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+        hospital: 'CHU Expert',
+        availableSpecialties: ['Cardiologie', 'Neurologie'],
+        twoFactorEnabled: true,
+      };
+    } else {
+      mockUser = {
+        id: '1',
+        name: 'Dr. Sophie Martin',
+        email: email,
+        role: 'doctor',
+        specialty: 'Cardiologie',
+        avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+        hospital: 'CHU de Lyon',
+        availableSpecialties: ['Cardiologie'],
+        twoFactorEnabled: true,
+      };
+    }
+
+    // Store in localStorage
+    localStorage.setItem('user', JSON.stringify(mockUser));
+    setUser(mockUser);
 
     return { success: true, require2fa: true };
   };
@@ -87,11 +119,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const verifyOtp = async (code: string) => {
     // DEMO: accept 6-digit 123456
     const ok = code.trim() === '123456';
-    if (!ok) return false;
-    return true;
+    return ok;
   };
 
   const logout = () => {
+    localStorage.removeItem('user');
     setUser(null);
     setFailedAttempts(0);
     setLockedUntil(null);

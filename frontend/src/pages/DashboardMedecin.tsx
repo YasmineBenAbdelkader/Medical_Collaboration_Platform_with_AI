@@ -1,12 +1,22 @@
 import { useEffect, useState } from 'react';
 import { CaseCard } from '../components/ui/CaseCard';
-import { FilterIcon, PlusCircleIcon, TrendingUpIcon, ClockIcon, UsersIcon, MessageCircleIcon, StarIcon, Trash2Icon, MoreVerticalIcon, PencilIcon, CheckIcon, XIcon, SendIcon, UserPlusIcon, Activity as ActivityIcon, HeartPulse as HeartPulseIcon, AlertTriangle as AlertTriangleIcon } from 'lucide-react';
+import { 
+  PlusCircleIcon, 
+  MoreVerticalIcon,
+  ClockIcon,
+  UsersIcon,
+  MessageCircleIcon,
+  StarIcon,
+  HeartPulse as HeartPulseIcon,
+  PencilIcon,
+  Trash2Icon
+} from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getCases, seedCasesIfEmpty, deleteCaseById } from '../services/storage';
 import type { StoredCase } from '../services/storage';
 import { useAuth } from '../contexts/AuthContext';
 
-export const Dashboard = () => {
+export const DashboardMedecin = () => {
   const [cases, setCases] = useState<StoredCase[]>([]);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'urgent' | 'resolved'>('all');
@@ -30,14 +40,6 @@ export const Dashboard = () => {
     const days = Math.floor(hours / 24);
     if (days === 1) return 'Hier';
     return `Il y a ${days} jours`;
-  };
-
-  // Données pour la sidebar
-  const stats = {
-    totalCases: cases.length,
-    urgentCases: cases.filter(c => c.isUrgent).length,
-    resolvedCases: cases.filter(c => c.isResolved).length,
-    activeExperts: 23
   };
 
   const recentActivity = [
@@ -68,26 +70,30 @@ export const Dashboard = () => {
     setOpenMenuId(null);
   };
 
+  const filteredCases = cases.filter(c => {
+    if (filter === 'all') return true;
+    if (filter === 'urgent') return c.isUrgent;
+    if (filter === 'resolved') return c.isResolved;
+    return true;
+  });
+
   return (
-    <div className="flex max-w-7xl mx-auto">
+    <div className="flex max-w-8xl mx-auto">
       {/* Contenu principal */}
       <div className="flex-1 pr-6">
-        <div className="flex items-center justify-between mb-8">
-          {/* Titre stylisé */}
+        <div className="flex items-center justify-between mb-2">
           <h1 className="text-3xl font-extrabold flex items-center tracking-tight">
-            <span className="inline-block w-1.5 h-8 bg-[#00A7A7] rounded-full mr-3 shadow-sm"></span>
+            <span className="inline-block w-1.5 h-8 bg-[#00A7A7] rounded-full mr-4 shadow-sm"></span>
             <span className="bg-gradient-to-r from-[#00A7A7] to-teal-800 bg-clip-text text-transparent">
               Accueil
             </span>
           </h1>
-          {/* Bouton Nouveau cas */}
           <Link 
             to="/case/new" 
             className="relative group inline-flex items-center px-5 py-2.5 rounded-xl text-white bg-[#00A7A7] shadow-md hover:shadow-lg transition-all duration-200 hover:bg-[#008f8f]"
           >
             <PlusCircleIcon size={20} className="mr-2 transition-transform group-hover:rotate-90" />
             <span className="font-medium">Nouveau cas</span>
-            <span className="absolute inset-0 rounded-xl ring-2 ring-transparent group-hover:ring-white/30 transition"></span>
           </Link>
         </div>
 
@@ -111,13 +117,13 @@ export const Dashboard = () => {
           <div className="relative z-10 p-4 sm:p-5 text-white">
             <div className="flex items-center gap-2 mb-1">
               <HeartPulseIcon size={22} className="text-white drop-shadow animate-pulse" />
-              <span className="uppercase text-xs tracking-widest opacity-80">MedCollab</span>
+              <span className="uppercase text-xs tracking-widest opacity-80">Medico</span>
             </div>
             <h2 className="text-lg sm:text-xl font-bold tracking-tight drop-shadow">
               Cardiologie
             </h2>
             <p className="text-white/80 text-xs sm:text-sm mt-1 max-w-xl">
-              Partagez vos cas cliniques, demandez l’avis d’experts et utilisez l’IA pour vous accompagner dans vos décisions cardiologiques.
+              Partagez vos cas cliniques, demandez l'avis d'experts et utilisez l'IA pour vous accompagner.
             </p>
           </div>
         </div>
@@ -132,12 +138,9 @@ export const Dashboard = () => {
         `}</style>
 
         {/* Filtres */}
-        <div className="bg-white rounded-xl border border-[#00A7A7]/30 p-4 mb-6 shadow-sm">
-          <h2 className="text-sm font-medium text-gray-500 mb-3 flex items-center">
-            <span className="inline-block w-1.5 h-5 bg-[#00A7A7] rounded-full mr-2"></span>
-            Affinez votre sélection
-          </h2>
+        <div className="bg-white rounded-xl border border-[#00A7A7]/30 p-2 mb-2 shadow-sm">
           <div className="flex flex-wrap gap-3">
+			
             <button
               onClick={() => setFilter('all')}
               className={`px-4 py-2 rounded-full border ${
@@ -167,30 +170,24 @@ export const Dashboard = () => {
 
         {/* Cases */}
         <div className="space-y-4">
-          {cases.filter(c => {
-            if (filter === 'all') return true;
-            if (filter === 'urgent') return c.isUrgent;
-            if (filter === 'resolved') return c.isResolved;
-            return true;
-          }).map(c => (
+          {filteredCases.map(c => (
             <div key={c.id} className="relative group">
               {user && user.id === c.author.id && (
-                <div className="absolute top-3 right-3">
+                <div className="absolute top-3 right-3 z-10">
                   <button
                     onClick={() => setOpenMenuId(openMenuId === c.id ? null : c.id)}
-                    title="Options de la publication"
-                    className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 bg-white/90 backdrop-blur shadow hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-600/40 opacity-0 group-hover:opacity-100 transition"
+                    className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 bg-white/90 backdrop-blur shadow hover:bg-gray-50 opacity-0 group-hover:opacity-100 transition"
                   >
                     <MoreVerticalIcon size={18} className="text-gray-600" />
                   </button>
                   {openMenuId === c.id && (
-                    <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-10">
+                    <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-20">
                       <button
                         onClick={() => handleEdit(c.id)}
                         className="w-full flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
                       >
-                        <PencilIcon size={16} className="mr-2 text-gray-500" />
-                        Modifier la publication
+                        <PencilIcon size={16} className="mr-2" />
+                        Modifier
                       </button>
                       <div className="my-1 h-px bg-gray-100"></div>
                       <button
@@ -220,19 +217,15 @@ export const Dashboard = () => {
               />
             </div>
           ))}
-          {cases.filter(c => {
-            if (filter === 'all') return true;
-            if (filter === 'urgent') return c.isUrgent;
-            if (filter === 'resolved') return c.isResolved;
-            return true;
-          }).length === 0 && (
+          {filteredCases.length === 0 && (
             <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
               <p className="text-gray-600 mb-2">Aucun cas à afficher pour le moment.</p>
             </div>
           )}
         </div>
       </div>
-      {/* Sidebar droite  */}
+
+      {/* Sidebar droite */}
       <div className="w-80 flex-shrink-0 space-y-6">
         {/* Activité récente */}
         <div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-lg">
@@ -280,9 +273,11 @@ export const Dashboard = () => {
               </div>
             ))}
           </div>
-          <button className="w-full mt-4 py-2 text-sm text-teal-600 font-medium rounded-xl bg-teal-50 hover:bg-teal-100 transition">
-            Voir tous les experts
-          </button>
+          <Link to="/experts">
+            <button className="w-full mt-4 py-2 text-sm text-teal-600 font-medium rounded-xl bg-teal-50 hover:bg-teal-100 transition">
+              Voir tous les experts
+            </button>
+          </Link>
         </div>
 
         {/* Conseils IA */}
@@ -292,18 +287,15 @@ export const Dashboard = () => {
             Conseil IA
           </h3>
           <p className="text-sm text-gray-700 mb-4">
-            Vous avez 3 cas cardiologiques en attente. L'assistant IA peut vous aider à analyser les ECG et suggérer des diagnostics.
+            Vous avez 3 cas cardiologiques en attente. L'assistant IA peut vous aider à analyser les ECG.
           </p>
           <Link 
             to="/ai-assistant" 
-            className="inline-flex items-center gap-1 text-sm font-medium text-teal-700 hover:text-teal-800 transition"
-          >
+            className="inline-flex items-center gap-1 text-sm font-medium text-teal-700 hover:text-teal-800 transition">
             Utiliser l'IA →
           </Link>
         </div>
       </div>
-
-
     </div>
   );
 };
